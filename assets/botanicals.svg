@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true" focusable="false">
+
+  <!-- A single five-petal bloom. Used as punctuation. -->
+  <symbol id="bot-bloom" viewBox="0 0 24 24">
+    <g fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 12 C 9.6 9.2 9.4 5.6 12 3 C 14.6 5.6 14.4 9.2 12 12 Z"/>
+      <path d="M12 12 C 9.6 9.2 9.4 5.6 12 3 C 14.6 5.6 14.4 9.2 12 12 Z" transform="rotate(72 12 12)"/>
+      <path d="M12 12 C 9.6 9.2 9.4 5.6 12 3 C 14.6 5.6 14.4 9.2 12 12 Z" transform="rotate(144 12 12)"/>
+      <path d="M12 12 C 9.6 9.2 9.4 5.6 12 3 C 14.6 5.6 14.4 9.2 12 12 Z" transform="rotate(216 12 12)"/>
+      <path d="M12 12 C 9.6 9.2 9.4 5.6 12 3 C 14.6 5.6 14.4 9.2 12 12 Z" transform="rotate(288 12 12)"/>
+      <circle cx="12" cy="12" r="1.25"/>
+    </g>
+  </symbol>
+
+  <!-- Horizontal sprig. Section divider. -->
+  <symbol id="bot-sprig" viewBox="0 0 240 48">
+    <g fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 26 C 44 18 72 30 102 24"/>
+      <path d="M138 24 C 168 18 196 30 236 22"/>
+      <path d="M34 22 C 27 19 24 12 30 8 C 35 12 37 18 34 22 Z"/>
+      <path d="M58 25 C 65 28 68 35 62 39 C 57 35 55 29 58 25 Z"/>
+      <path d="M82 24 C 75 21 72 14 78 10 C 83 14 85 20 82 24 Z"/>
+      <path d="M158 22 C 165 19 168 12 162 8 C 157 12 155 18 158 22 Z"/>
+      <path d="M182 25 C 175 28 172 35 178 39 C 183 35 185 29 182 25 Z"/>
+      <path d="M206 23 C 213 20 216 13 210 9 C 205 13 203 19 206 23 Z"/>
+      <g transform="translate(120 23) scale(0.82)">
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(72)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(144)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(216)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(288)"/>
+        <circle cx="0" cy="0" r="1.1"/>
+      </g>
+      <path d="M104 23 C 108 20 111 21 112 24"/>
+      <path d="M128 24 C 130 21 133 20 136 23"/>
+    </g>
+  </symbol>
+
+  <!-- Corner spray. A curving branch with leaves and two blooms. -->
+  <symbol id="bot-spray" viewBox="0 0 130 212">
+    <g fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 206 C 26 170 30 130 46 98 C 60 70 80 44 98 24"/>
+      <path d="M42 112 C 60 104 76 108 92 100"/>
+      <path d="M24 174 C 12 172 4 162 8 150 C 18 154 25 164 24 174 Z"/>
+      <path d="M31 142 C 43 138 53 144 53 156 C 42 157 33 152 31 142 Z"/>
+      <path d="M46 100 C 34 98 26 88 30 76 C 40 80 47 90 46 100 Z"/>
+      <path d="M67 61 C 79 57 89 63 89 75 C 78 76 69 71 67 61 Z"/>
+      <path d="M83 39 C 71 37 63 27 67 15 C 77 19 84 29 83 39 Z"/>
+      <g transform="translate(101 20) scale(1.15)">
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(72)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(144)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(216)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(288)"/>
+        <circle cx="0" cy="0" r="1.1"/>
+      </g>
+      <g transform="translate(94 98) scale(0.8)">
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(72)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(144)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(216)"/>
+        <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(288)"/>
+        <circle cx="0" cy="0" r="1"/>
+      </g>
+    </g>
+  </symbol>
+
+  <!-- Slender stem with buds. Floating accent. -->
+  <symbol id="bot-stem" viewBox="0 0 64 184">
+    <g fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M33 180 C 28 146 35 112 30 78 C 27 54 31 30 34 10"/>
+      <path d="M31 148 C 20 146 13 137 17 126 C 26 130 32 139 31 148 Z"/>
+      <path d="M32 112 C 43 109 51 115 50 126 C 40 126 33 121 32 112 Z"/>
+      <path d="M29 74 C 18 72 11 63 15 52 C 24 56 30 65 29 74 Z"/>
+      <path d="M31 44 C 42 41 50 47 49 58 C 39 58 32 53 31 44 Z"/>
+      <path d="M34 12 C 30 12 27 8 28 3 C 32 2 36 5 36 9 C 36 11 35 12 34 12 Z"/>
+      <path d="M34 12 C 38 12 41 8 40 3 C 36 2 33 5 33 9"/>
+    </g>
+  </symbol>
+
+  <!-- Small three-leaf mark used on package cards. -->
+  <symbol id="bot-trio" viewBox="0 0 60 60">
+    <g fill="none" stroke="currentColor" stroke-width="1.15" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M30 56 C 30 44 30 34 30 26"/>
+      <path d="M30 40 C 18 40 10 32 12 20 C 24 22 31 30 30 40 Z"/>
+      <path d="M30 40 C 42 40 50 32 48 20 C 36 22 29 30 30 40 Z"/>
+      <path d="M30 26 C 24 20 24 12 30 5 C 36 12 36 20 30 26 Z"/>
+      <circle cx="30" cy="24" r="1.1"/>
+    </g>
+  </symbol>
+
+</svg>
