@@ -230,7 +230,7 @@
       });
 
       if (!valid) {
-        showStatus('err', 'A couple of fields still need your attention.');
+        showStatus('err', 'A couple of fields still need filling in.');
         if (firstBad) firstBad.focus();
         return;
       }
@@ -246,7 +246,7 @@
 
       if (!FORM_ENDPOINT) {
         mailtoFallback(data);
-        showStatus('ok', 'Your email app should be open with the details ready to send. If nothing happened, text Piper at 940-205-1220 or send a DM on Instagram — either reaches her just as fast.');
+        showStatus('ok', 'Your email app should be open with the details ready to send. If not, text 940-205-1220 or send a DM.');
         return;
       }
 
@@ -263,10 +263,10 @@
         .then(function (res) {
           if (!res.ok) throw new Error('Request failed');
           form.reset();
-          showStatus('ok', 'Thank you — your note is on its way to Piper. She answers by text or Instagram DM, so keep an eye out there too.');
+          showStatus('ok', 'Thank you — that\'s on its way to Piper.');
         })
         .catch(function () {
-          showStatus('err', 'Something went wrong sending that. Please text Piper at 940-205-1220 or send a DM on Instagram instead.');
+          showStatus('err', 'That didn\'t send. Please text 940-205-1220 or send a DM instead.');
         })
         .then(function () {
           if (submitBtn) {

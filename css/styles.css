@@ -566,18 +566,6 @@ p + p { margin-top: 1.15em; }
 a.media:hover img,
 .media-hover:hover .media img { transform: scale(1.035); }
 
-.figure-caption {
-  display: flex;
-  align-items: center;
-  gap: 0.6em;
-  margin-top: var(--s-3);
-  font-size: var(--fs-label);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.figure-caption .bloom-mark { color: var(--rose-lite); width: 0.85em; height: 0.85em; }
-
 /* --------------------------------------------------------------------------
    10. Hero
    -------------------------------------------------------------------------- */
@@ -859,15 +847,14 @@ a.media:hover img,
   color: var(--rose-lite);
   margin-bottom: var(--s-5);
 }
-.package__title { margin-bottom: 0.5rem; }
-.package__note {
+.package__title { margin-bottom: var(--s-4); }
+
+.package__foot {
+  margin-top: var(--s-4);
   font-size: var(--fs-small);
   color: var(--ink-faint);
   letter-spacing: 0.02em;
-  margin-bottom: var(--s-5);
-  min-height: 1.5em;
 }
-
 .tiers { border-top: 1px solid var(--hairline-soft); margin-top: var(--s-2); }
 .tier {
   display: grid;
@@ -899,17 +886,6 @@ a.media:hover img,
   color: var(--ink-soft);
 }
 
-.packages__foot {
-  margin-top: clamp(2rem, 3.5vw, 3rem);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-5);
-  font-size: var(--fs-small);
-  color: var(--ink-soft);
-}
-
 /* --------------------------------------------------------------------------
    15. About
    -------------------------------------------------------------------------- */
@@ -920,27 +896,6 @@ a.media:hover img,
   align-items: center;
 }
 .about__media { max-width: 440px; width: 100%; }
-
-.about__facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--s-5) var(--s-6);
-  margin-top: var(--s-7);
-  padding-top: var(--s-6);
-  border-top: 1px solid var(--hairline-soft);
-}
-.fact__label {
-  display: flex;
-  align-items: center;
-  gap: 0.55em;
-  font-size: var(--fs-label);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--rose);
-  margin-bottom: 0.5rem;
-}
-.fact__label .bloom-mark { width: 1.3em; height: 1.3em; color: var(--rose-lite); }
-.fact__value { font-size: var(--fs-small); color: var(--ink-soft); line-height: 1.65; }
 
 /* --------------------------------------------------------------------------
    16. Service area + closing CTA
