@@ -779,29 +779,6 @@ a.media:hover img,
 /* --------------------------------------------------------------------------
    13. Quiet band — a full-bleed breath between sections
    -------------------------------------------------------------------------- */
-/* The photograph is left alone — no scrim, no type over it. The line that
-   goes with it sits underneath on paper, where it can be read properly. */
-.quiet-band { background: var(--cream); margin: 0; }
-.quiet-band__media {
-  height: clamp(320px, 52vh, 560px);
-  overflow: hidden;
-  background: var(--cream);
-}
-.quiet-band__media img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: 50% 46%;
-}
-.quiet-band__caption {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--s-3);
-  padding: clamp(2.5rem, 5vw, 4rem) var(--gutter) clamp(3rem, 6vw, 5rem);
-  text-align: center;
-}
-.quiet-band__caption .sprig-divider { margin: 0 0 var(--s-2); }
-.quiet-band__caption .pull-quote { max-width: 22ch; }
 
 /* --------------------------------------------------------------------------
    14. Sessions & packages
@@ -1311,7 +1288,6 @@ a.contact-method:hover {
   .hero__actions { gap: var(--s-4); }
   .hero__actions .btn { width: 100%; justify-content: center; }
   .form__foot .btn { width: 100%; justify-content: center; }
-  .quiet-band { height: clamp(280px, 46vh, 380px); }
 }
 
 /* --------------------------------------------------------------------------
