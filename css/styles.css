@@ -766,9 +766,11 @@ a.media:hover img,
   align-items: center;
 }
 .spread + .spread { margin-top: clamp(0.9rem, 2vw, 1.9rem); }
-.spread--a { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+/* Every tile within a row shares the same aspect ratio and an equal-width
+   column, so rows come out uniform in size by construction rather than by
+   eyeballing — no mismatched heights, no per-row hand-tuning. */
 .spread--b { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
-.spread--c { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.spread--d { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 .work__footer {
   display: flex;
@@ -1243,8 +1245,7 @@ a.contact-method:hover {
   .hero__scroll { display: none; }
   .hero__spray { left: auto; right: calc(var(--gutter) * -0.4); bottom: 2%; }
 
-  .spread--a,
-  .spread--c { grid-template-columns: minmax(0, 1fr); }
+  .spread--d { grid-template-columns: minmax(0, 1fr); }
   .spread--b { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .spread--b > *:nth-child(3) { grid-column: 1 / -1; max-width: 62%; margin-inline: auto; }
 
