@@ -62,9 +62,6 @@ Any endpoint that accepts a JSON `POST` of
    all use the placeholder `https://lilylynnephotography.com`. Search and replace
    it with the real domain.
 2. **Form endpoint.** See above, or leave the mail-app fallback in place.
-3. **`assets/about/piper-portrait.jpg`** is unconfirmed as Piper, so it is used
-   nowhere and is excluded from deploys via `.vercelignore`. If Piper confirms
-   it, it can go into the About section.
 
 ## Local preview
 

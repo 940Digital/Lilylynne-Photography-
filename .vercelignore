@@ -2,8 +2,6 @@
 # assets/opt/ are what the pages actually reference.
 assets/gallery/
 assets/hero/
-
-# Unconfirmed as Piper — kept in the repo, deliberately never published.
 assets/about/
 
 # Local dev only.
