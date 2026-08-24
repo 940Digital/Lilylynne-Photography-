@@ -39,6 +39,20 @@ card headers, and two drifting stems in the service-area band. They inherit
 themselves in, and 1.035 image hovers. All of it collapses under
 `prefers-reduced-motion: reduce`.
 
+**Images** — every photograph gets a WebP `srcset` (plus a JPG fallback for
+the rare non-WebP browser) whose *top* tier is the full resolution of the
+source file, at quality 88 (WebP) / 90 (JPG). The delivered "web-optimized
+subset" tops out at 933px wide for portrait crops and 1400px for landscape;
+those numbers are the derivatives' ceiling too, so a retina screen gets a
+genuinely sharp image up to that size rather than an upscaled small one. A
+realistic first visit is ~2MB on desktop / ~700K on mobile — normal for a
+photography-led site, and the right trade for images that are the whole
+product. The one place this ceiling shows: the two full-bleed bands (the
+"golden hour" photo on Home, the page-hero on Contact) render at the full
+viewport width, which on very large monitors can exceed the 1400px source.
+Higher-resolution originals for those two specific shots would close that gap
+completely if Piper has them.
+
 ## Booking form
 
 The form validates client-side and then hands the enquiry off. Out of the box
