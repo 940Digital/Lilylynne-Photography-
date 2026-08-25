@@ -1289,6 +1289,14 @@ a.contact-method:hover {
   .hero__actions { gap: var(--s-4); }
   .hero__actions .btn { width: 100%; justify-content: center; }
   .form__foot .btn { width: 100%; justify-content: center; }
+
+  /* At this width every gallery row has stacked to one column, so the whole
+     grid reads as a single vertical run of photos — bookend it like one
+     card: an arch on the very first image, the mirrored curve on the very
+     last, everything between stays at the default soft corner. Desktop
+     never sees this; it's scoped to this breakpoint only. */
+  .work__first { border-radius: var(--r-arch); }
+  .work__last { border-radius: var(--r-soft) var(--r-soft) 999px 999px; }
 }
 
 /* --------------------------------------------------------------------------
