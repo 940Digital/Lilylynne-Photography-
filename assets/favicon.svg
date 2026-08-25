@@ -3,10 +3,11 @@
   <g fill="none" stroke="#8E5F63" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"
      transform="translate(16 16) scale(1.32)">
     <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z"/>
-    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(72)"/>
-    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(144)"/>
-    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(216)"/>
-    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(288)"/>
+    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(60)"/>
+    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(120)"/>
+    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(180)"/>
+    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(240)"/>
+    <path d="M0 0 C -2.4 -2.8 -2.6 -6.4 0 -9 C 2.6 -6.4 2.4 -2.8 0 0 Z" transform="rotate(300)"/>
     <circle cx="0" cy="0" r="1.1"/>
   </g>
 </svg>
