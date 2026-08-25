@@ -717,16 +717,10 @@ a.media:hover img,
 .page-hero__inner .lead { color: rgba(255,255,255,0.92); max-width: 46ch; }
 
 /* --------------------------------------------------------------------------
-   11. Welcome
+   11. Welcome — a short centered band, reusing .section-head--center rather
+   than a dedicated layout (it no longer carries a photo; About covers Piper
+   with an image further down the page).
    -------------------------------------------------------------------------- */
-.welcome__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  gap: clamp(2.5rem, 6vw, 6rem);
-  align-items: center;
-}
-.welcome__media { max-width: 420px; margin-inline: auto; width: 100%; }
-
 .signature {
   font-family: var(--font-display);
   font-style: italic;
@@ -1215,10 +1209,8 @@ a.contact-method:hover {
    21. Responsive
    -------------------------------------------------------------------------- */
 @media (max-width: 1080px) {
-  .welcome__grid,
   .about__grid,
   .contact__grid { grid-template-columns: minmax(0, 1fr); }
-  .welcome__media,
   .about__media { max-width: 380px; margin-inline: auto; }
   .about__grid > .about__media { order: -1; }
   .packages { grid-template-columns: minmax(0, 1fr); max-width: 34rem; margin-inline: auto; }
