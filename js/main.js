@@ -320,7 +320,7 @@
         .then(function (res) {
           if (!res.ok) throw new Error('Request failed');
           form.reset();
-          showStatus('ok', 'Thank you — that\'s on its way to Piper.');
+          showStatus('ok', 'Thank you! That\'s on its way to Piper.');
         })
         .catch(function () {
           showStatus('err', 'That didn\'t send. Please text 940-205-1220 or send a DM instead.');

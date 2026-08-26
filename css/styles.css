@@ -705,32 +705,6 @@ a.media:hover img,
 .page-hero__inner .lead { color: rgba(255,255,255,0.92); max-width: 46ch; }
 
 /* --------------------------------------------------------------------------
-   11. Welcome — a single short line between the hero and the work grid, not
-   a section. No photo, no signature — About covers Piper properly further
-   down the page.
-   -------------------------------------------------------------------------- */
-.welcome-line {
-  text-align: center;
-  padding-block: clamp(2rem, 4.5vw, 3.25rem);
-}
-.welcome-line__label {
-  font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--rose);
-  margin-bottom: 0.6rem;
-}
-.welcome-line__text {
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-variation-settings: "SOFT" 60, "WONK" 1;
-  font-size: clamp(1.2rem, 2vw, 1.55rem);
-  letter-spacing: -0.005em;
-  color: var(--ink);
-}
-
-/* --------------------------------------------------------------------------
    12. Featured work
    -------------------------------------------------------------------------- */
 .work__head {
