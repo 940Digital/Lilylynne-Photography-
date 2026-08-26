@@ -1138,7 +1138,42 @@ a.contact-method:hover {
 [data-draw].is-in { stroke-dashoffset: 0; }
 
 /* --------------------------------------------------------------------------
-   21. Responsive
+   21. Lightbox — tap any gallery photo to view it large, tap again to close
+   -------------------------------------------------------------------------- */
+.spread figure.media { cursor: zoom-in; }
+
+body.lightbox-open { overflow: hidden; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 5vw, 4rem);
+  background: rgba(24, 19, 16, 0.92);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s var(--ease-out), visibility 0.35s;
+  cursor: zoom-out;
+}
+.lightbox.is-open { opacity: 1; visibility: visible; }
+.lightbox__img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  border-radius: var(--r-soft);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  transform: scale(0.96);
+  transition: transform 0.35s var(--ease-out);
+}
+.lightbox.is-open .lightbox__img { transform: scale(1); }
+
+/* --------------------------------------------------------------------------
+   22. Responsive
    -------------------------------------------------------------------------- */
 @media (max-width: 1080px) {
   .about__grid,
@@ -1230,7 +1265,7 @@ a.contact-method:hover {
 }
 
 /* --------------------------------------------------------------------------
-   22. Preferences & print
+   23. Preferences & print
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

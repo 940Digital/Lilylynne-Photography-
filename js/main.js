@@ -197,6 +197,65 @@
     Array.prototype.forEach.call(dividers, function (svg) { drawObserver.observe(svg); });
   }
 
+  /* --------------------------------------------------------------- Lightbox */
+  // Every photo in a gallery grid (the home page's featured work and the
+  // full gallery page both use .spread rows of figure.media) opens large on
+  // tap/click; tapping it again — or the dimmed backdrop, or Escape — closes
+  // it. The About portrait and the hero/page-hero photos aren't wrapped in
+  // .spread, so they're untouched.
+  var lightboxFigures = document.querySelectorAll('.spread figure.media');
+  if (lightboxFigures.length) {
+    var lightbox = document.createElement('div');
+    lightbox.className = 'lightbox';
+    lightbox.setAttribute('role', 'dialog');
+    lightbox.setAttribute('aria-modal', 'true');
+    lightbox.setAttribute('aria-label', 'Enlarged photo');
+    lightbox.tabIndex = -1;
+
+    var lightboxImg = document.createElement('img');
+    lightboxImg.className = 'lightbox__img';
+    lightbox.appendChild(lightboxImg);
+    document.body.appendChild(lightbox);
+
+    var lastFigure = null;
+
+    function openLightbox(figure) {
+      var img = figure.querySelector('img');
+      if (!img) return;
+      lightboxImg.src = img.currentSrc || img.src;
+      lightboxImg.alt = img.alt || '';
+      lastFigure = figure;
+      lightbox.classList.add('is-open');
+      document.body.classList.add('lightbox-open');
+      lightbox.focus();
+    }
+
+    function closeLightbox() {
+      if (!lightbox.classList.contains('is-open')) return;
+      lightbox.classList.remove('is-open');
+      document.body.classList.remove('lightbox-open');
+      if (lastFigure) lastFigure.focus();
+    }
+
+    Array.prototype.forEach.call(lightboxFigures, function (figure) {
+      figure.setAttribute('tabindex', '0');
+      figure.setAttribute('role', 'button');
+      figure.setAttribute('aria-label', 'View this photo larger');
+      figure.addEventListener('click', function () { openLightbox(figure); });
+      figure.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(figure);
+        }
+      });
+    });
+
+    lightbox.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  }
+
   /* --------------------------------------------------------- Booking form */
   /* Set this to a form endpoint (Formspree, Netlify, a Vercel function, …)
      and submissions will POST as JSON. Left empty, the form hands the
