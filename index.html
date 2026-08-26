@@ -183,6 +183,7 @@
   <nav class="nav__menu" id="navMenu" aria-label="Primary">
     <a class="nav__link" href="index.html" aria-current="page">Home</a>
     <a class="nav__link" href="#work">Work</a>
+    <a class="nav__link" href="gallery.html">Gallery</a>
     <a class="nav__link" href="#sessions">Sessions</a>
     <a class="nav__link" href="#about">About</a>
     <a class="nav__cta" href="contact.html">
@@ -219,26 +220,14 @@
           alt="A high school senior in a blue floral dress kneeling in a field of orange Indian paintbrush at golden hour.">
       </picture>
     </div>
-
-    <span class="hero__scroll" aria-hidden="true"><span class="hero__scroll-line"></span> Scroll</span>
   </section>
 
   <!-- ===== Welcome ================================================== -->
-  <!-- Kept short on purpose: About covers Piper at length further down, so
-       this is just a warm one-line welcome, not a second bio. -->
-  <section class="section section--tight wash" id="welcome">
-    <div class="container container--narrow">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow eyebrow--center">Welcome</p>
-        <h2>Come as you are.</h2>
-        <svg class="botanical sprig-divider sprig-divider--center" viewBox="0 0 240 48" aria-hidden="true"><use href="#bot-sprig"/></svg>
-        <p class="lead">Easy, outdoors, unhurried. No stiff posing, no counting to three.</p>
-        <p class="signature">Piper
-          <span class="signature-role">Lilylynne Photography</span>
-        </p>
-      </div>
-    </div>
-  </section>
+  <!-- One line, nothing more — About covers Piper properly further down. -->
+  <div class="welcome-line" data-reveal>
+    <p class="welcome-line__label">Welcome</p>
+    <p class="welcome-line__text">Come as you are &mdash; easy, outdoors, unhurried.</p>
+  </div>
 
   <!-- ===== Featured work ============================================ -->
   <section class="section section--cream" id="work" aria-labelledby="work-title">
@@ -314,6 +303,13 @@
               alt="A Texas Woman&rsquo;s University graduate holding her cap and wearing her stole on campus.">
           </picture>
         </figure>
+      </div>
+
+      <div class="work__footer" data-reveal>
+        <a class="btn btn--ghost" href="gallery.html">
+          View the Full Gallery
+          <svg class="botanical bloom-mark" aria-hidden="true"><use href="#bot-bloom"/></svg>
+        </a>
       </div>
     </div>
   </section>
@@ -454,6 +450,7 @@
           <ul>
             <li><a href="index.html">Home</a></li>
             <li><a href="index.html#work">Work</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
             <li><a href="index.html#sessions">Sessions &amp; Pricing</a></li>
             <li><a href="contact.html">Book a Session</a></li>
           </ul>

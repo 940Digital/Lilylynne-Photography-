@@ -1,10 +1,11 @@
 # Lilylynne Photography
 
-Two-page site for **Piper Vaughan** — family and portrait photographer in the
-Denton, Texas area (Aubrey, Denton, Pilot Point, Sanger).
+Three-page site for **Piper Vaughan** — family and portrait photographer in
+the Denton, Texas area (Aubrey, Denton, Pilot Point, Sanger).
 
-- `index.html` — hero, welcome, selected work, sessions & pricing, about, service area
-- `contact.html` — booking form, direct contact, what happens next, recent work
+- `index.html` — hero, a one-line welcome, selected work, sessions & pricing, about, service area
+- `gallery.html` — the full portfolio, every real client photo, in the same row-based grid as Home
+- `contact.html` — booking form and direct contact, nothing else
 
 ## Stack
 
@@ -47,11 +48,11 @@ those numbers are the derivatives' ceiling too, so a retina screen gets a
 genuinely sharp image up to that size rather than an upscaled small one. A
 realistic first visit is ~2MB on desktop / ~700K on mobile — normal for a
 photography-led site, and the right trade for images that are the whole
-product. The one place this ceiling shows: the two full-bleed bands (the
-"golden hour" photo on Home, the page-hero on Contact) render at the full
-viewport width, which on very large monitors can exceed the 1400px source.
-Higher-resolution originals for those two specific shots would close that gap
-completely if Piper has them.
+product. The one place this ceiling shows: the three full-bleed page-hero
+photos (Contact, Gallery, plus whichever shots anchor Home) render at the
+full viewport width, which on very large monitors can exceed the 1400px
+source. Higher-resolution originals for those specific shots would close
+that gap completely if Piper has them.
 
 ## Booking form
 

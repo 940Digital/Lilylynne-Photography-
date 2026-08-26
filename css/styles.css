@@ -624,8 +624,19 @@ a.media:hover img,
   content: "";
   position: absolute;
   inset: 0 auto 0 0;
-  width: 22%;
-  background: linear-gradient(to right, var(--ivory), transparent);
+  width: 42%;
+  /* Eased, wide fade rather than a flat two-stop ramp — a straight linear
+     alpha fade reads as a visible edge over a bright, busy photo. Stops are
+     --ivory's RGB (251 248 244) at decreasing alpha so the curve holds
+     opacity longer near the page, then tapers slowly into the photo. */
+  background: linear-gradient(
+    to right,
+    rgba(251,248,244,1)    0%,
+    rgba(251,248,244,0.75) 22%,
+    rgba(251,248,244,0.45) 46%,
+    rgba(251,248,244,0.18) 70%,
+    rgba(251,248,244,0)    100%
+  );
   pointer-events: none;
 }
 
@@ -638,41 +649,6 @@ a.media:hover img,
   opacity: 0.45;
   z-index: 1;
   pointer-events: none;
-}
-
-.hero__scroll {
-  position: absolute;
-  left: var(--gutter);
-  bottom: clamp(1.5rem, 4vh, 2.75rem);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75em;
-  font-size: var(--fs-label);
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  z-index: 3;
-}
-.hero__scroll-line {
-  display: block;
-  width: 3rem; height: 1px;
-  background: var(--hairline);
-  position: relative;
-  overflow: hidden;
-}
-.hero__scroll-line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--rose);
-  transform-origin: left;
-  animation: scroll-sweep 3.4s var(--ease) infinite;
-}
-@keyframes scroll-sweep {
-  0%       { transform: scaleX(0); transform-origin: left; }
-  45%      { transform: scaleX(1); transform-origin: left; }
-  55%      { transform: scaleX(1); transform-origin: right; }
-  100%     { transform: scaleX(0); transform-origin: right; }
 }
 
 /* Page hero — used on Contact */
@@ -717,29 +693,29 @@ a.media:hover img,
 .page-hero__inner .lead { color: rgba(255,255,255,0.92); max-width: 46ch; }
 
 /* --------------------------------------------------------------------------
-   11. Welcome — a short centered band, reusing .section-head--center rather
-   than a dedicated layout (it no longer carries a photo; About covers Piper
-   with an image further down the page).
+   11. Welcome — a single short line between the hero and the work grid, not
+   a section. No photo, no signature — About covers Piper properly further
+   down the page.
    -------------------------------------------------------------------------- */
-.signature {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 300;
-  font-variation-settings: "SOFT" 100, "WONK" 1;
-  font-size: clamp(1.7rem, 2.4vw, 2.1rem);
-  color: var(--rose);
-  margin-top: var(--s-6);
-  line-height: 1;
+.welcome-line {
+  text-align: center;
+  padding-block: clamp(2rem, 4.5vw, 3.25rem);
 }
-.signature-role {
-  display: block;
-  font-family: var(--font-body);
-  font-style: normal;
+.welcome-line__label {
   font-size: var(--fs-label);
-  letter-spacing: 0.26em;
+  font-weight: 400;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-top: 0.9em;
+  color: var(--rose);
+  margin-bottom: 0.6rem;
+}
+.welcome-line__text {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-variation-settings: "SOFT" 60, "WONK" 1;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  letter-spacing: -0.005em;
+  color: var(--ink);
 }
 
 /* --------------------------------------------------------------------------
@@ -973,36 +949,6 @@ a.contact-method:hover {
   color: var(--ink-faint);
 }
 
-.steps { counter-reset: step; display: grid; gap: var(--s-5); margin-top: var(--s-6); }
-.step {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--s-4);
-  align-items: start;
-}
-.step__num {
-  counter-increment: step;
-  width: 2.5rem; height: 2.5rem;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--hairline);
-  border-radius: 50%;
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  color: var(--rose);
-  flex: none;
-}
-.step__num::before { content: counter(step, decimal-leading-zero); }
-.step__title { font-size: 1.1rem; margin-bottom: 0.25rem; }
-.step__body { font-size: var(--fs-small); color: var(--ink-soft); line-height: 1.7; }
-
-.recent-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(0.9rem, 2vw, 1.9rem);
-  margin-top: clamp(2rem, 4vw, 3.25rem);
-}
-
 /* --------------------------------------------------------------------------
    18. Form
    -------------------------------------------------------------------------- */
@@ -1226,15 +1172,21 @@ a.contact-method:hover {
   .hero__media::after {
     inset: auto 0 0 0;
     width: auto;
-    height: 20%;
-    background: linear-gradient(to top, var(--ivory), transparent);
+    height: 34%;
+    background: linear-gradient(
+      to top,
+      rgba(251,248,244,1)    0%,
+      rgba(251,248,244,0.75) 22%,
+      rgba(251,248,244,0.45) 46%,
+      rgba(251,248,244,0.18) 70%,
+      rgba(251,248,244,0)    100%
+    );
   }
   .hero__copy {
     padding: clamp(2.5rem, 7vw, 4rem) var(--gutter) clamp(3.5rem, 8vw, 5rem);
     text-align: left;
   }
   .hero__lead { max-width: 46ch; }
-  .hero__scroll { display: none; }
   .hero__spray { left: auto; right: calc(var(--gutter) * -0.4); bottom: 2%; }
 
   .spread--d { grid-template-columns: minmax(0, 1fr); }
@@ -1243,8 +1195,6 @@ a.contact-method:hover {
 
   .work__head { align-items: flex-start; }
   .form__grid { grid-template-columns: minmax(0, 1fr); }
-  .recent-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .recent-strip > *:nth-child(3) { grid-column: 1 / -1; max-width: 62%; margin-inline: auto; }
 }
 
 @media (max-width: 780px) {
@@ -1276,8 +1226,6 @@ a.contact-method:hover {
 @media (max-width: 560px) {
   .spread--b { grid-template-columns: minmax(0, 1fr); }
   .spread--b > *:nth-child(3) { max-width: none; }
-  .recent-strip { grid-template-columns: minmax(0, 1fr); }
-  .recent-strip > *:nth-child(3) { max-width: none; }
   .hero__actions { gap: var(--s-4); }
   .hero__actions .btn { width: 100%; justify-content: center; }
   .form__foot .btn { width: 100%; justify-content: center; }
@@ -1308,7 +1256,7 @@ a.contact-method:hover {
 }
 
 @media print {
-  .nav, .hero__scroll, .float-botanical, .btn { display: none !important; }
+  .nav, .float-botanical, .btn { display: none !important; }
   body { background: #fff; color: #000; }
   .section { padding-block: 1.5rem; }
 }
