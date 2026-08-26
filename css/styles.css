@@ -442,35 +442,15 @@ p + p { margin-top: 1.15em; }
   gap: var(--s-5);
   padding: clamp(1rem, 2vw, 1.6rem) var(--gutter);
   color: var(--ink);
-  background: transparent;
-  transition:
-    background-color var(--dur-slow) var(--ease),
-    box-shadow var(--dur-slow) var(--ease),
-    color var(--dur-slow) var(--ease),
-    padding var(--dur-slow) var(--ease);
-}
-.nav::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
   background: var(--ivory);
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease);
+  transition:
+    box-shadow var(--dur-slow) var(--ease),
+    padding var(--dur-slow) var(--ease);
 }
 .nav.is-stuck {
   padding-block: clamp(0.7rem, 1.2vw, 1rem);
   box-shadow: 0 1px 0 var(--hairline-soft);
 }
-.nav.is-stuck::after { opacity: 1; }
-
-/* Over a photograph, before scroll */
-.nav.is-over-media { color: #FFFFFF; text-shadow: 0 1px 20px rgba(40,30,25,0.42); }
-.nav.is-over-media .wordmark__sub { color: rgba(255,255,255,0.9); }
-.nav.is-over-media .nav__link::after { background: rgba(255,255,255,0.85); }
-.nav.is-over-media .nav__cta { border-color: rgba(255,255,255,0.6); color: #FFFFFF; }
-.nav.is-over-media .nav__cta:hover { background: #FFFFFF; color: var(--ink); border-color: #FFFFFF; text-shadow: none; }
-.nav.is-over-media .nav__toggle-bar { background: #FFFFFF; }
 
 .nav__menu {
   display: flex;
