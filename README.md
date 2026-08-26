@@ -42,17 +42,17 @@ themselves in, and 1.035 image hovers. All of it collapses under
 
 **Images** — every photograph gets a WebP `srcset` (plus a JPG fallback for
 the rare non-WebP browser) whose *top* tier is the full resolution of the
-source file, at quality 88 (WebP) / 90 (JPG). The delivered "web-optimized
-subset" tops out at 933px wide for portrait crops and 1400px for landscape;
-those numbers are the derivatives' ceiling too, so a retina screen gets a
-genuinely sharp image up to that size rather than an upscaled small one. A
-realistic first visit is ~2MB on desktop / ~700K on mobile — normal for a
-photography-led site, and the right trade for images that are the whole
-product. The one place this ceiling shows: the three full-bleed page-hero
-photos (Contact, Gallery, plus whichever shots anchor Home) render at the
-full viewport width, which on very large monitors can exceed the 1400px
-source. Higher-resolution originals for those specific shots would close
-that gap completely if Piper has them.
+source file, at quality 88 (WebP) / 90 (JPG), so a retina screen gets a
+genuinely sharp image rather than an upscaled small one. Two source
+generations sit side by side in `assets/gallery/`: the original 16-photo
+"web-optimized subset" tops out at 933px (portrait) / 1400px (landscape),
+while the 30 photos pulled from Piper's fuller portfolio (added later,
+`gallery.html`'s bulk) run natively up to 2048px — noticeably sharper on
+large screens, and the reason the full-bleed page-hero ceiling noted here
+previously mostly no longer applies. A realistic first visit is ~2MB on
+desktop / ~700K on mobile for Home — Gallery is heavier (46 photos) but
+every image below the fold is lazy-loaded, so nothing downloads until a
+visitor actually scrolls to it.
 
 ## Booking form
 

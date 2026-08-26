@@ -1225,7 +1225,11 @@ a.contact-method:hover {
 
 @media (max-width: 560px) {
   .spread--b { grid-template-columns: minmax(0, 1fr); }
-  .spread--b > *:nth-child(3) { max-width: none; }
+  /* Reset every property the ≤900px rule set on the 3rd child, not just
+     max-width — margin-inline: auto left in place made it shrink-to-fit an
+     aspect-ratio box with no other sizing basis, collapsing it to 0 width
+     (only visible on rows far enough down the page to expose it). */
+  .spread--b > *:nth-child(3) { grid-column: auto; max-width: none; margin-inline: 0; }
   .hero__actions { gap: var(--s-4); }
   .hero__actions .btn { width: 100%; justify-content: center; }
   .form__foot .btn { width: 100%; justify-content: center; }
