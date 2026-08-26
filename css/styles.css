@@ -588,13 +588,46 @@ a.media:hover img,
   overflow: hidden;
   background: var(--cream);
 }
-.hero__media img {
+
+/* Carousel — a handful of slides stacked in the same box. The first plays
+   the original one-time page-load entrance (keyframe, unchanged); every
+   slide after that crossfades in via transition when JS marks it active,
+   the image easing from a soft zoom-and-drift into its settled resting
+   position. Slow durations on purpose — "gliding," not "sliding." */
+.hero__slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 1.3s var(--ease-out);
+}
+/* No-JS default: show the first slide, nothing else. Once JS is running
+   this hands off entirely to .is-active — without scoping it that way,
+   :first-child would keep slide one pinned at opacity: 1 forever, fighting
+   every later slide at the same z-index and never actually fading out. */
+.hero__slide:first-child { opacity: 1; z-index: 1; }
+.js .hero__slide:first-child { opacity: 0; z-index: 0; }
+.hero__slide.is-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.hero__slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 32%;
+}
+.hero__slide:first-child img {
   object-position: 52% 34%;
   animation: hero-settle 2.4s var(--ease-out) both;
 }
+.hero__slide:not(:first-child) img {
+  transform: scale(1.05) translateY(14px);
+  transition: transform 2s var(--ease-out);
+}
+.hero__slide.is-active img { transform: scale(1) translateY(0); }
+
 @keyframes hero-settle {
   from { transform: scale(1.07); opacity: 0; }
   to   { transform: scale(1);    opacity: 1; }
@@ -605,6 +638,9 @@ a.media:hover img,
   position: absolute;
   inset: 0 auto 0 0;
   width: 42%;
+  /* Above every .hero__slide (active slides sit at z-index: 1) so the fade
+     stays visible through every carousel transition, not just the first. */
+  z-index: 2;
   /* Eased, wide fade rather than a flat two-stop ramp — a straight linear
      alpha fade reads as a visible edge over a bright, busy photo. Stops are
      --ivory's RGB (251 248 244) at decreasing alpha so the curve holds

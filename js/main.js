@@ -13,6 +13,43 @@
     el.textContent = new Date().getFullYear();
   });
 
+  /* ---------------------------------------------------------- Hero carousel */
+  var heroCarousel = document.getElementById('heroCarousel');
+  if (heroCarousel && !reduceMotion) {
+    var heroSlides = heroCarousel.querySelectorAll('.hero__slide');
+    if (heroSlides.length > 1) {
+      var heroIndex = 0;
+      var heroTimer = null;
+
+      function showHeroSlide(next) {
+        heroSlides[heroIndex].classList.remove('is-active');
+        heroIndex = next;
+        heroSlides[heroIndex].classList.add('is-active');
+      }
+
+      function startHero() {
+        stopHero();
+        heroTimer = window.setInterval(function () {
+          showHeroSlide((heroIndex + 1) % heroSlides.length);
+        }, 3000);
+      }
+      function stopHero() {
+        if (heroTimer) { window.clearInterval(heroTimer); heroTimer = null; }
+      }
+
+      // The first slide is already visible via CSS (:first-child); marking
+      // it active in JS too keeps state consistent without a visible jump.
+      heroSlides[0].classList.add('is-active');
+      startHero();
+
+      // No point animating a hero nobody can see — pause while the tab is
+      // hidden, resume when it's back.
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) stopHero(); else startHero();
+      });
+    }
+  }
+
   /* ------------------------------------------------------------ Navigation */
   var nav = document.getElementById('nav');
   var toggle = document.getElementById('navToggle');
