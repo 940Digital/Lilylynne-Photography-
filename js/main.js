@@ -51,14 +51,24 @@
         }, 1500);
       }
 
+      // The very first slide holds for 3s; every one after that holds for
+      // 5s. heroHasAdvanced only ever flips once, so pausing/resuming the
+      // tab doesn't re-grant the shorter first delay.
+      var heroHasAdvanced = false;
+
+      function scheduleHero(delay) {
+        heroTimer = window.setTimeout(function () {
+          heroHasAdvanced = true;
+          showHeroSlide((heroIndex + 1) % heroSlides.length);
+          scheduleHero(5000);
+        }, delay);
+      }
       function startHero() {
         stopHero();
-        heroTimer = window.setInterval(function () {
-          showHeroSlide((heroIndex + 1) % heroSlides.length);
-        }, 3000);
+        scheduleHero(heroHasAdvanced ? 5000 : 3000);
       }
       function stopHero() {
-        if (heroTimer) { window.clearInterval(heroTimer); heroTimer = null; }
+        if (heroTimer) { window.clearTimeout(heroTimer); heroTimer = null; }
       }
 
       startHero();
