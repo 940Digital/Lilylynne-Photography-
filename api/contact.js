@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: '"Lilylynne Photography Website" <forms@940digital.com>',
-        to: ['940Digital@gmail.com'], // TEMP: testing delivery before pointing at Piper's real inbox
+        to: ['piperlvaughan@gmail.com'],
         reply_to: email,
         subject: `New session enquiry from ${name}`,
         text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'not given'}\nSession type: ${session || 'not given'}\nPreferred dates or times: ${dates || 'flexible'}\n\nMessage:\n${message}`,
