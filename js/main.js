@@ -260,7 +260,7 @@
   /* Set this to a form endpoint (Formspree, Netlify, a Vercel function, …)
      and submissions will POST as JSON. Left empty, the form hands the
      completed enquiry to the visitor's mail app instead — no data is lost. */
-  var FORM_ENDPOINT = '';
+  var FORM_ENDPOINT = '/api/contact';
 
   var form = document.getElementById('bookingForm');
   if (form) {
