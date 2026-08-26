@@ -14,17 +14,41 @@
   });
 
   /* ---------------------------------------------------------- Hero carousel */
+  // The first slide is marked up active directly in the HTML, so this whole
+  // feature is additive: if this script never runs, the hero is still a
+  // single correct, fully visible photo — never blank.
   var heroCarousel = document.getElementById('heroCarousel');
   if (heroCarousel && !reduceMotion) {
     var heroSlides = heroCarousel.querySelectorAll('.hero__slide');
     if (heroSlides.length > 1) {
       var heroIndex = 0;
+      var heroZ = 1; // matches the first slide's default stacking; only ever climbs
       var heroTimer = null;
+      var heroResetTimer = null;
 
       function showHeroSlide(next) {
-        heroSlides[heroIndex].classList.remove('is-active');
+        var prev = heroIndex;
         heroIndex = next;
-        heroSlides[heroIndex].classList.add('is-active');
+
+        // Higher than anything before it — guarantees the incoming slide
+        // covers the previous one as it glides in, with no risk of a tie
+        // even across the loop's wraparound back to slide 0.
+        heroZ += 1;
+        heroSlides[next].style.zIndex = String(heroZ);
+        heroSlides[next].classList.add('is-active');
+
+        // Once fully covered, silently park the previous slide back off
+        // to the left (no transition) so it's ready to glide in again next
+        // time its turn comes, instead of just sitting there already "in."
+        if (heroResetTimer) window.clearTimeout(heroResetTimer);
+        heroResetTimer = window.setTimeout(function () {
+          var prevSlide = heroSlides[prev];
+          prevSlide.classList.add('is-resetting');
+          prevSlide.classList.remove('is-active');
+          prevSlide.style.zIndex = '';
+          void prevSlide.offsetWidth; // flush, so removing is-resetting next doesn't animate the snap-back
+          prevSlide.classList.remove('is-resetting');
+        }, 1500);
       }
 
       function startHero() {
@@ -37,9 +61,6 @@
         if (heroTimer) { window.clearInterval(heroTimer); heroTimer = null; }
       }
 
-      // The first slide is already visible via CSS (:first-child); marking
-      // it active in JS too keeps state consistent without a visible jump.
-      heroSlides[0].classList.add('is-active');
       startHero();
 
       // No point animating a hero nobody can see — pause while the tab is
