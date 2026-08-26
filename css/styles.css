@@ -435,7 +435,10 @@ p + p { margin-top: 1.15em; }
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
-  z-index: 100;
+  /* Must outrank .hero__media::after (z-index: 1000) — that overlay's
+     left-side fade sits directly under the fixed nav on the home page,
+     and without this the gradient painted over the menu links. */
+  z-index: 1100;
   display: flex;
   align-items: center;
   justify-content: space-between;
