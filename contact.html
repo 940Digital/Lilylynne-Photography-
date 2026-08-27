@@ -307,6 +307,14 @@
                 <textarea id="message" name="message" rows="5" required minlength="10" placeholder="Who&rsquo;s coming, and what the session is for." aria-describedby="message-error"></textarea>
                 <span class="field__error" id="message-error" role="alert"></span>
               </div>
+
+              <div class="field field--full">
+                <label for="captchaAnswer">Quick check: what is <span id="captchaQuestion">4 + 7</span>? <span class="req" aria-hidden="true">*</span></label>
+                <input type="text" inputmode="numeric" autocomplete="off" id="captchaAnswer" name="captchaAnswer" required placeholder="Your answer" aria-describedby="captcha-error">
+                <input type="hidden" id="captchaA" name="captchaA">
+                <input type="hidden" id="captchaB" name="captchaB">
+                <span class="field__error" id="captcha-error" role="alert"></span>
+              </div>
             </div>
 
             <div class="form__foot">

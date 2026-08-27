@@ -4,11 +4,20 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { name, email, phone, session, dates, message, company } = req.body || {};
+  const { name, email, phone, session, dates, message, company, captchaA, captchaB, captchaAnswer } = req.body || {};
 
   // Honeypot: a real visitor never sees or fills this field.
   if (company) {
     res.status(200).json({ success: true });
+    return;
+  }
+
+  // Math captcha: server re-checks the sum the client already validated.
+  const a = parseInt(captchaA, 10);
+  const b = parseInt(captchaB, 10);
+  const answer = parseInt(captchaAnswer, 10);
+  if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(answer) || answer !== a + b) {
+    res.status(400).json({ error: 'Captcha verification failed' });
     return;
   }
 
