@@ -2,6 +2,6 @@
   "name": "lilylynne-photography",
   "private": true,
   "dependencies": {
-    "altcha-lib": "^2.2.0"
+    "altcha-lib": "2.2.0"
   }
 }
