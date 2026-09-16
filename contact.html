@@ -36,6 +36,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..600,0..100,0..1;1,9..144,300..500,0..100,0..1&family=Jost:wght@300;400;500&display=swap">
 <link rel="preload" as="image" href="assets/opt/piper-portrait-wide-1200.webp" imagesrcset="assets/opt/piper-portrait-wide-800.webp 800w, assets/opt/piper-portrait-wide-1200.webp 1200w, assets/opt/piper-portrait-wide-1400.webp 1400w" imagesizes="100vw" fetchpriority="high">
 <link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/altcha.css">
+<style>
+  altcha-widget {
+    --altcha-color-base: var(--paper, #fff);
+    --altcha-color-border: var(--hairline-soft, #ddd6c9);
+    --altcha-color-text: var(--ink, #332E29);
+    --altcha-color-border-focus: var(--rose, #8E5F63);
+    --altcha-max-width: 100%;
+    font-family: var(--font-body, 'Jost', sans-serif);
+  }
+</style>
 
 <script type="application/ld+json">
 {
@@ -309,10 +320,7 @@
               </div>
 
               <div class="field field--full">
-                <label for="captchaAnswer">Quick check: what is <span id="captchaQuestion">4 + 7</span>? <span class="req" aria-hidden="true">*</span></label>
-                <input type="text" inputmode="numeric" autocomplete="off" id="captchaAnswer" name="captchaAnswer" required placeholder="Your answer" aria-describedby="captcha-error">
-                <input type="hidden" id="captchaA" name="captchaA">
-                <input type="hidden" id="captchaB" name="captchaB">
+                <altcha-widget challenge="/api/altcha-challenge" name="altcha" hidelogo></altcha-widget>
                 <span class="field__error" id="captcha-error" role="alert"></span>
               </div>
             </div>
@@ -381,6 +389,7 @@
   </div>
 </footer>
 
+<script async defer src="js/altcha.min.js" type="module"></script>
 <script src="js/main.js" defer></script>
 </body>
 </html>

@@ -283,9 +283,6 @@
       if (input.validity.tooShort) {
         return 'A little more detail, please.';
       }
-      if (input.id === 'captchaAnswer') {
-        return 'Please answer the question above.';
-      }
       return 'Please check this field.';
     }
 
@@ -308,24 +305,6 @@
         if (fieldOf(input) && fieldOf(input).classList.contains('is-invalid')) validate(input);
       });
     });
-
-    /* Simple math captcha: two small random numbers, checked again server-side. */
-    var captchaQuestionEl = document.getElementById('captchaQuestion');
-    var captchaAnswerInput = document.getElementById('captchaAnswer');
-    var captchaAInput = document.getElementById('captchaA');
-    var captchaBInput = document.getElementById('captchaB');
-    var captchaSum = 0;
-
-    function newCaptcha() {
-      var a = 1 + Math.floor(Math.random() * 9);
-      var b = 1 + Math.floor(Math.random() * 9);
-      captchaSum = a + b;
-      if (captchaQuestionEl) captchaQuestionEl.textContent = a + ' + ' + b;
-      if (captchaAInput) captchaAInput.value = a;
-      if (captchaBInput) captchaBInput.value = b;
-      if (captchaAnswerInput) captchaAnswerInput.value = '';
-    }
-    newCaptcha();
 
     function showStatus(kind, text) {
       if (!status) return;
@@ -372,15 +351,11 @@
         return;
       }
 
-      var captchaOk = captchaAnswerInput && parseInt(captchaAnswerInput.value, 10) === captchaSum;
-      if (!captchaOk) {
-        var captchaWrap = fieldOf(captchaAnswerInput);
-        if (captchaWrap) captchaWrap.classList.add('is-invalid');
+      var altchaInput = form.querySelector('input[name="altcha"]');
+      if (!altchaInput || !altchaInput.value) {
         var captchaError = document.getElementById('captcha-error');
-        if (captchaError) captchaError.textContent = 'That answer is not quite right.';
-        showStatus('err', 'Please double-check the quick math question.');
-        newCaptcha();
-        if (captchaAnswerInput) captchaAnswerInput.focus();
+        if (captchaError) captchaError.textContent = 'Please wait for the verification to finish, then try again.';
+        showStatus('err', 'Please wait for the verification to finish, then try again.');
         return;
       }
 
@@ -391,15 +366,12 @@
         session: form.elements.session.value,
         dates: form.elements.dates.value.trim(),
         message: form.elements.message.value.trim(),
-        captchaA: form.elements.captchaA.value,
-        captchaB: form.elements.captchaB.value,
-        captchaAnswer: captchaAnswerInput.value.trim()
+        altcha: altchaInput.value
       };
 
       if (!FORM_ENDPOINT) {
         mailtoFallback(data);
         showStatus('ok', 'Your email app should be open with the details ready to send. If not, text 940-205-1220 or send a DM.');
-        newCaptcha();
         return;
       }
 
@@ -422,7 +394,7 @@
           showStatus('err', 'That didn\'t send. Please text 940-205-1220 or send a DM instead.');
         })
         .then(function () {
-          newCaptcha();
+          if (window.altcha) form.querySelectorAll('altcha-widget').forEach(function (w) { w.reset && w.reset(); });
           if (submitBtn) {
             submitBtn.removeAttribute('data-state');
             if (submitLabel) submitLabel.textContent = originalLabel;

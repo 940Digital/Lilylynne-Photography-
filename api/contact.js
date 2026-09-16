@@ -1,10 +1,14 @@
+import { verifySolution } from 'altcha-lib/v1';
+
+const HMAC_KEY = process.env.ALTCHA_HMAC_KEY;
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
-  const { name, email, phone, session, dates, message, company, captchaA, captchaB, captchaAnswer } = req.body || {};
+  const { name, email, phone, session, dates, message, company, altcha } = req.body || {};
 
   // Honeypot: a real visitor never sees or fills this field.
   if (company) {
@@ -12,11 +16,14 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Math captcha: server re-checks the sum the client already validated.
-  const a = parseInt(captchaA, 10);
-  const b = parseInt(captchaB, 10);
-  const answer = parseInt(captchaAnswer, 10);
-  if (!Number.isFinite(a) || !Number.isFinite(b) || !Number.isFinite(answer) || answer !== a + b) {
+  // ALTCHA proof-of-work captcha, same as 940digital.com's contact form.
+  let verified = false;
+  try {
+    verified = altcha ? await verifySolution(altcha, HMAC_KEY, true) : false;
+  } catch {
+    verified = false;
+  }
+  if (!verified) {
     res.status(400).json({ error: 'Captcha verification failed' });
     return;
   }
