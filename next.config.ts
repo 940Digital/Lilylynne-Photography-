@@ -19,6 +19,14 @@ const config: NextConfig = {
       ],
     };
   },
+  // The old static host served clean URLs and redirected the .html forms. Keep that behaviour.
+  async redirects() {
+    return [
+      { source: "/index.html", destination: "/", permanent: true },
+      { source: "/gallery.html", destination: "/gallery", permanent: true },
+      { source: "/contact.html", destination: "/contact", permanent: true },
+    ];
+  },
   async headers() {
     return ["/admin/:path*", "/g/:path*", "/api/:path*"].map((source) => ({ source, headers: noindex }));
   },
