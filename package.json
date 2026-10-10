@@ -6,7 +6,6 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "db:migrate": "node scripts/migrate.mjs",
     "mock-s3": "node scripts/mock-s3.mjs",
     "hash-password": "node scripts/hash-password.mjs"
   },

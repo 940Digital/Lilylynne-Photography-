@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { neon } from "@neondatabase/serverless";
+import { SCHEMA_STATEMENTS } from "./schema";
 
 type Params = unknown[];
 interface Result<T> { rows: T[]; rowCount: number }
@@ -46,9 +47,21 @@ async function getDriver(): Promise<Driver> {
   return driver;
 }
 
+async function run<T>(text: string, params: Params): Promise<Result<T>> {
+  const d = await getDriver();
+  try {
+    return await d<T>(text, params);
+  } catch (e) {
+    // 42P01 = table does not exist: first run on an empty database. Create the schema, then retry once.
+    if ((e as { code?: string })?.code !== "42P01") throw e;
+    for (const stmt of SCHEMA_STATEMENTS) await d(stmt, []);
+    return d<T>(text, params);
+  }
+}
+
 /** Runs a statement and returns all rows. Use $1, $2 ... placeholders. */
 export async function query<T = Record<string, unknown>>(text: string, params: Params = []): Promise<T[]> {
-  return (await (await getDriver())<T>(text, params)).rows;
+  return (await run<T>(text, params)).rows;
 }
 
 export async function queryOne<T = Record<string, unknown>>(text: string, params: Params = []): Promise<T | null> {
@@ -57,7 +70,7 @@ export async function queryOne<T = Record<string, unknown>>(text: string, params
 
 /** Runs a statement and returns how many rows it changed. */
 export async function exec(text: string, params: Params = []): Promise<number> {
-  return (await (await getDriver())(text, params)).rowCount;
+  return (await run(text, params)).rowCount;
 }
 
 export const isUniqueViolation = (e: unknown) => (e as { code?: string })?.code === "23505";

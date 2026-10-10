@@ -101,7 +101,7 @@ gallery route sends `noindex`, and `robots.txt` disallows `/admin`, `/g/`, `/api
 | `/admin` | Piper's login, dashboard, gallery creation, drag and drop upload, zip, delete |
 | `/g/[slug]` | Client view: optional password, grid, lightbox, slideshow, original download, "Download all" zip |
 | `/api/cron/daily` | Vercel cron (daily): marks expired galleries, logs a reminder, deletes files after a 3 day grace period |
-| Neon Postgres | Gallery and photo records (`db/schema.sql`) |
+| Neon Postgres | Gallery and photo records (tables are created automatically on first use, see `src/lib/schema.ts`) |
 | Cloudflare R2 | The photo files, private bucket, browser uploads straight to it with presigned URLs |
 
 Branding and every limit (10 galleries, 5 GB each, 60 day expiry) are in
@@ -111,7 +111,7 @@ Branding and every limit (10 galleries, 5 GB each, 60 day expiry) are in
 ### One-time setup
 
 1. **Neon:** Vercel project, Storage tab, add Neon Postgres. Vercel sets
-   `DATABASE_URL`. Then run the schema once: `DATABASE_URL="<value>" npm run db:migrate`.
+   `DATABASE_URL`. Nothing else to do: the app creates its tables on first use.
 2. **R2:** create a private bucket (Cloudflare dashboard, R2). Create an API
    token with Object Read & Write scoped to that bucket. Apply CORS so browsers
    can upload directly (replace the origin if you use another domain):
@@ -131,7 +131,6 @@ Branding and every limit (10 galleries, 5 GB each, 60 day expiry) are in
 
 ```bash
 cp .env.example .env.local     # use DATABASE_URL=pglite://./.data/pg and R2_ENDPOINT=http://localhost:9477
-npm run db:migrate             # creates the local embedded Postgres
 npm run mock-s3                # local stand-in for R2 (separate terminal)
 npm run dev                    # http://localhost:3000
 ```
