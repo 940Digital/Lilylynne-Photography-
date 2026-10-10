@@ -12,6 +12,7 @@ import { env } from "@/lib/env";
 import { formatBytes, formatDate, toDateInput } from "@/lib/format";
 import { idParam } from "@/lib/http";
 import { presignGet } from "@/lib/storage";
+import { recordUsage } from "@/lib/usage";
 
 export const metadata = { title: "Manage gallery" };
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ export default async function ManageGallery({ params }: { params: Promise<{ id: 
 
   const photos = await listReadyPhotos(g.id);
   const maxOrder = photos.reduce((m, p) => Math.max(m, p.sort_order), -1);
+  await recordUsage("read", photos.length);
   const adminPhotos = await Promise.all(
     photos.map(async (p) => ({
       id: p.id,

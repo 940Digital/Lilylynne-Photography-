@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/auth";
 import { isExpired, nowSec, query, type Gallery } from "@/lib/db";
 import { env } from "@/lib/env";
 import { formatBytes, formatDate } from "@/lib/format";
+import { currentUsage } from "@/lib/usage";
 
 export const metadata = { title: "Galleries" };
 export const dynamic = "force-dynamic";
@@ -22,6 +23,12 @@ export default async function AdminDashboard() {
   const activeCount = results.filter((g) => !isExpired(g)).length;
   const usedBytes = results.reduce((sum, g) => sum + g.total_bytes, 0);
   const pct = Math.min(100, Math.round((activeCount / studio.maxActiveGalleries) * 100));
+  const usage = await currentUsage();
+  const meters = [
+    { label: "Storage", text: `${formatBytes(usedBytes)} of ${formatBytes(studio.maxTotalBytes)}`, value: usedBytes / studio.maxTotalBytes },
+    { label: "Views this month", text: `${usage.read.toLocaleString()} of ${studio.monthlyReadBudget.toLocaleString()}`, value: usage.read / studio.monthlyReadBudget },
+    { label: "Uploads this month", text: `${usage.write.toLocaleString()} of ${studio.monthlyWriteBudget.toLocaleString()}`, value: usage.write / studio.monthlyWriteBudget },
+  ];
   const base = env.appUrl;
 
   return (
@@ -30,11 +37,22 @@ export default async function AdminDashboard() {
       <main className="mx-auto max-w-5xl px-4 py-8">
         <section className="card p-5">
           <p className="text-lg">
-            <strong>{activeCount}</strong> of {studio.maxActiveGalleries} galleries, <strong>{formatBytes(usedBytes)}</strong> used
+            <strong>{activeCount}</strong> of {studio.maxActiveGalleries} galleries
           </p>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Active galleries used">
             <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
           </div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-3">
+            {meters.map((m) => (
+              <div key={m.label}>
+                <div className="flex justify-between text-xs text-muted"><span>{m.label}</span><span>{m.text}</span></div>
+                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line">
+                  <div className={`h-full rounded-full ${m.value > 0.8 ? "bg-red-700" : "bg-accent"}`} style={{ width: `${Math.min(100, Math.round(m.value * 100))}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-muted">These limits keep the site inside Cloudflare's free tier. At the limit, uploads or viewing pause until space or the new month frees up.</p>
         </section>
 
         <h1 className="display mb-4 mt-10 text-3xl">Galleries</h1>

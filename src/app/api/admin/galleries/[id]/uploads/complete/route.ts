@@ -3,6 +3,7 @@ import { studio } from "@studio";
 import { exec, getGalleryById, queryOne, type Photo } from "@/lib/db";
 import { fail, guardAdmin, idParam, json, parseBody } from "@/lib/http";
 import { deleteKeys, headObject } from "@/lib/storage";
+import { recordUsage } from "@/lib/usage";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -25,6 +26,7 @@ export async function POST(req: Request, ctx: Ctx) {
   );
   if (!photo) return fail(404, "Upload not found.");
 
+  await recordUsage("read", 3);
   const [o, p, t] = await Promise.all([
     headObject(photo.original_key),
     headObject(photo.preview_key),
@@ -41,8 +43,9 @@ export async function POST(req: Request, ctx: Ctx) {
     ? 0
     : await exec(
         `UPDATE galleries SET total_bytes = GREATEST(0, total_bytes + $1::bigint)
-         WHERE id = $2 AND total_bytes + $1::bigint <= $3::bigint`,
-        [delta, g.id, studio.maxBytesPerGallery],
+         WHERE id = $2 AND total_bytes + $1::bigint <= $3::bigint
+           AND (SELECT COALESCE(SUM(total_bytes), 0) FROM galleries) + $1::bigint <= $4::bigint`,
+        [delta, g.id, studio.maxBytesPerGallery, studio.maxTotalBytes],
       );
 
   if (bumped === 0) {

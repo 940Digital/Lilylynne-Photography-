@@ -3,6 +3,7 @@ import { studio } from "@studio";
 import { randomSlug } from "@/lib/crypto";
 import { exec, getGalleryById, isExpired, nowSec } from "@/lib/db";
 import { fail, guardAdmin, idParam, json, parseBody } from "@/lib/http";
+import { consumeUsage, totalStoredBytes } from "@/lib/usage";
 import { galleryPrefix, presignPut } from "@/lib/storage";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -35,11 +36,27 @@ export async function POST(req: Request, ctx: Ctx) {
 
   const reserve = data.originalBytes + data.previewBytes + data.thumbBytes;
   // One statement checks and increments, so parallel uploads cannot overshoot the cap together.
+  // Both caps (this gallery and the whole studio) are checked in the same statement.
   const bumped = await exec(
-    "UPDATE galleries SET total_bytes = total_bytes + $1::bigint WHERE id = $2 AND total_bytes + $1::bigint <= $3::bigint",
-    [reserve, g.id, studio.maxBytesPerGallery],
+    `UPDATE galleries SET total_bytes = total_bytes + $1::bigint
+     WHERE id = $2 AND total_bytes + $1::bigint <= $3::bigint
+       AND (SELECT COALESCE(SUM(total_bytes), 0) FROM galleries) + $1::bigint <= $4::bigint`,
+    [reserve, g.id, studio.maxBytesPerGallery, studio.maxTotalBytes],
   );
-  if (bumped === 0) return fail(413, "This gallery has reached its storage limit.");
+  if (bumped === 0) {
+    const all = await totalStoredBytes();
+    return fail(
+      413,
+      all + reserve > studio.maxTotalBytes
+        ? "Studio storage limit reached. Delete an old gallery to free space before uploading more."
+        : "This gallery has reached its storage limit.",
+    );
+  }
+  // Three upload URLs plus the verify step later. Release the reservation if the monthly budget is spent.
+  if (!(await consumeUsage("write", 3))) {
+    await exec("UPDATE galleries SET total_bytes = GREATEST(0, total_bytes - $1::bigint) WHERE id = $2", [reserve, g.id]);
+    return fail(429, "Monthly upload limit reached. Uploads resume next month.");
+  }
 
   const photoId = randomSlug(20);
   const prefix = galleryPrefix(g.id);

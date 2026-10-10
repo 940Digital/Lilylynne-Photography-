@@ -5,6 +5,7 @@ import { Brand } from "@/components/Brand";
 import { hasGalleryAccess } from "@/lib/auth";
 import { getGalleryBySlug, isExpired, listReadyPhotos } from "@/lib/db";
 import { presignGet } from "@/lib/storage";
+import { consumeUsage } from "@/lib/usage";
 import { Gate } from "./Gate";
 import { Viewer, type ViewerPhoto } from "./Viewer";
 
@@ -42,6 +43,21 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
   }
 
   const rows = await listReadyPhotos(g.id);
+  // Thumbnail + preview URL per photo. Over the monthly budget we stop serving instead of risking a bill.
+  if (!(await consumeUsage("read", rows.length * 2))) {
+    return (
+      <main className="mx-auto grid min-h-dvh max-w-md place-items-center px-4 text-center">
+        <div>
+          <Brand />
+          <h1 className="display mt-8 text-3xl">Gallery temporarily unavailable</h1>
+          <p className="mt-3 text-muted">
+            This gallery is very busy right now. Please try again later, or contact {studio.name} at{" "}
+            <a className="underline" href={`mailto:${studio.adminContactEmail}`}>{studio.adminContactEmail}</a>.
+          </p>
+        </div>
+      </main>
+    );
+  }
   const photos: ViewerPhoto[] = await Promise.all(
     rows.map(async (p) => ({
       id: p.id,

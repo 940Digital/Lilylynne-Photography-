@@ -138,6 +138,23 @@ npm run dev                    # http://localhost:3000
 The embedded Postgres (PGlite) and the mock S3 server are development tools
 only. Production uses Neon and R2.
 
+### Spending safeguards
+
+Cloudflare has no stop-at-limit setting for R2, so the app enforces its own
+caps (all in `studio.config.ts`) to stay inside R2's free tier:
+
+- `maxTotalBytes` (8 GB of the free 10 GB): new uploads are refused, with a clear
+  message, once all galleries together reach it. Delete an old gallery to free space.
+- `monthlyReadBudget` (6M of the free 10M reads) and `monthlyWriteBudget` (600k of
+  the free 1M writes): counted per calendar month. At the limit, galleries show
+  "temporarily unavailable" and uploads pause until next month. Reads are counted
+  when a signed URL is issued, which over-counts real fetches (conservative).
+- The admin dashboard shows all three meters. Per-gallery (5 GB) and gallery-count
+  (10) caps still apply.
+
+These cannot cap Neon or Vercel. Also set a Cloudflare billing alert, and
+consider a card with its own spending limit.
+
 ### Notes
 
 - Originals must be JPEG, PNG or WebP the browser can decode (max 100 MB each).

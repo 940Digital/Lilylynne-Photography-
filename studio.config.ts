@@ -11,6 +11,12 @@ export const studio = {
   publicDomain: "www.lilylynnephotography.com",
   adminContactEmail: "piperlvaughan@gmail.com",
 
+  // Safety caps that keep the whole studio inside Cloudflare R2's free tier
+  // (10 GB storage, 1M writes and 10M reads a month). The app refuses to go past them.
+  maxTotalBytes: 8 * 1024 ** 3, // all galleries together
+  monthlyReadBudget: 6_000_000, // signed read URLs issued per month (counts every thumbnail, preview, download)
+  monthlyWriteBudget: 600_000, // upload URLs and list calls per month
+
   maxActiveGalleries: 10,
   maxBytesPerGallery: 5 * 1024 ** 3, // 5 GB, counts originals + previews + thumbnails + zip
   defaultExpiryDays: 60,

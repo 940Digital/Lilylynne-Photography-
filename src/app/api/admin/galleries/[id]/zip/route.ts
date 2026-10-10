@@ -4,6 +4,7 @@ import { randomSlug } from "@/lib/crypto";
 import { exec, getGalleryById, isExpired } from "@/lib/db";
 import { fail, guardAdmin, idParam, json, parseBody } from "@/lib/http";
 import { deleteKeys, galleryPrefix, headObject, presignPut } from "@/lib/storage";
+import { consumeUsage, recordUsage, totalStoredBytes } from "@/lib/usage";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -37,6 +38,10 @@ export async function POST(req: Request, ctx: Ctx) {
   if (g.total_bytes - g.zip_bytes + data.bytes > studio.maxBytesPerGallery) {
     return fail(413, "The zip would put this gallery over its storage limit.");
   }
+  if ((await totalStoredBytes()) - g.zip_bytes + data.bytes > studio.maxTotalBytes) {
+    return fail(413, "The zip would put the studio over its storage limit. Delete an old gallery first.");
+  }
+  if (!(await consumeUsage("write", 1))) return fail(429, "Monthly upload limit reached. Uploads resume next month.");
   const key = `${galleryPrefix(g.id)}zip/${randomSlug(8)}/${safeName(data.filename)}`;
   return json({ key, url: await presignPut(key) });
 }
@@ -50,13 +55,15 @@ export async function PUT(req: Request, ctx: Ctx) {
   if (error) return error;
   if (!data.key.startsWith(`${galleryPrefix(g.id)}zip/`)) return fail(400, "key: wrong gallery.");
 
+  await recordUsage("read", 1);
   const head = await headObject(data.key);
   if (!head) return fail(400, "The zip did not finish uploading.");
 
   const bumped = await exec(
     `UPDATE galleries SET total_bytes = total_bytes - zip_bytes + $1::bigint, zip_bytes = $1::bigint, zip_key = $2
-     WHERE id = $3 AND total_bytes - zip_bytes + $1::bigint <= $4::bigint`,
-    [head.size, data.key, g.id, studio.maxBytesPerGallery],
+     WHERE id = $3 AND total_bytes - zip_bytes + $1::bigint <= $4::bigint
+       AND (SELECT COALESCE(SUM(total_bytes), 0) FROM galleries) - zip_bytes + $1::bigint <= $5::bigint`,
+    [head.size, data.key, g.id, studio.maxBytesPerGallery, studio.maxTotalBytes],
   );
   if (bumped === 0) {
     await deleteKeys([data.key]);

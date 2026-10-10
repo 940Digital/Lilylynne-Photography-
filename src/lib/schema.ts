@@ -37,4 +37,10 @@ export const SCHEMA_STATEMENTS = [
   count        INTEGER NOT NULL,
   window_start BIGINT NOT NULL
 )`,
+  `CREATE TABLE IF NOT EXISTS usage (
+  month TEXT NOT NULL,
+  kind  TEXT NOT NULL,
+  count BIGINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (month, kind)
+)`,
 ];

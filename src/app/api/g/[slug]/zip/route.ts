@@ -2,6 +2,7 @@ import { hasGalleryAccess } from "@/lib/auth";
 import { getGalleryBySlug, isExpired } from "@/lib/db";
 import { fail } from "@/lib/http";
 import { presignGet } from "@/lib/storage";
+import { consumeUsage } from "@/lib/usage";
 
 export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }> }) {
   const { slug } = await ctx.params;
@@ -11,6 +12,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }
   if (!g || isExpired(g) || !g.zip_key) return fail(404, "Not found.");
   if (!(await hasGalleryAccess(g))) return fail(401, "Password required.");
 
+  if (!(await consumeUsage("read", 1))) return fail(503, "Downloads are temporarily unavailable. Please try again later.");
   const name = g.zip_key.split("/").pop() ?? "gallery.zip";
   const url = await presignGet(g.zip_key, { expiresSec: 600, downloadName: name });
   return new Response(null, { status: 302, headers: { Location: url, "Cache-Control": "no-store" } });

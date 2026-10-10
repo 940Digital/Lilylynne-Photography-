@@ -2,6 +2,7 @@ import { hasGalleryAccess } from "@/lib/auth";
 import { getGalleryBySlug, isExpired, queryOne, type Photo } from "@/lib/db";
 import { fail, idParam } from "@/lib/http";
 import { presignGet } from "@/lib/storage";
+import { consumeUsage } from "@/lib/usage";
 
 /** Auth-checks, then redirects to a short-lived signed URL that forces a download of the original. */
 export async function GET(_req: Request, ctx: { params: Promise<{ slug: string; photoId: string }> }) {
@@ -19,6 +20,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ slug: string; 
   );
   if (!photo) return fail(404, "Not found.");
 
+  if (!(await consumeUsage("read", 1))) return fail(503, "Downloads are temporarily unavailable. Please try again later.");
   const url = await presignGet(photo.original_key, { expiresSec: 300, downloadName: photo.filename });
   return new Response(null, { status: 302, headers: { Location: url, "Cache-Control": "no-store" } });
 }
