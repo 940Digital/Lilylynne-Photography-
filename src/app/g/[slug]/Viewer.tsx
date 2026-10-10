@@ -1,0 +1,249 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Brand } from "@/components/Brand";
+import { formatDate } from "@/lib/format";
+
+export interface ViewerPhoto {
+  id: string;
+  filename: string;
+  width: number;
+  height: number;
+  thumb: string;
+  preview: string;
+}
+
+const SLIDE_MS = 4000;
+
+export function Viewer({
+  slug,
+  title,
+  clientName,
+  photos,
+  hasZip,
+  expiresAt,
+}: {
+  slug: string;
+  title: string;
+  clientName: string;
+  photos: ViewerPhoto[];
+  hasZip: boolean;
+  expiresAt: number;
+}) {
+  const router = useRouter();
+  const [open, setOpen] = useState<number | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const lastTile = useRef<HTMLElement | null>(null);
+
+  // Signed URLs last an hour. If one fails (tab left open), re-render the page for fresh ones.
+  const lastRefresh = useRef(0);
+  const onImgError = useCallback(() => {
+    if (Date.now() - lastRefresh.current > 60_000) {
+      lastRefresh.current = Date.now();
+      router.refresh();
+    }
+  }, [router]);
+
+  function start(index: number, play = false) {
+    lastTile.current = document.activeElement as HTMLElement | null;
+    setOpen(index);
+    setPlaying(play);
+  }
+  function close() {
+    setOpen(null);
+    setPlaying(false);
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    lastTile.current?.focus?.();
+  }
+
+  const dl = (id: string) => `/api/g/${slug}/download/${id}`;
+
+  return (
+    <div className="min-h-dvh">
+      <header className="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-4 px-4 pb-6 pt-8 sm:px-8">
+        <div>
+          <Brand />
+          <h1 className="display mt-6 text-4xl sm:text-5xl">{title}</h1>
+          <p className="mt-1 text-muted">
+            {clientName} · {photos.length} photos · available until {formatDate(expiresAt)}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {photos.length > 0 && (
+            <button className="btn" onClick={() => start(0, true)}>Slideshow</button>
+          )}
+          {hasZip && (
+            <a className="btn btn-primary" href={`/api/g/${slug}/zip`}>Download all</a>
+          )}
+        </div>
+      </header>
+
+      {photos.length === 0 ? (
+        <p className="px-4 py-24 text-center text-muted sm:px-8">Photos are on their way. Check back soon.</p>
+      ) : (
+        <main className="mx-auto max-w-[1600px] columns-2 gap-2 px-2 pb-16 sm:gap-3 sm:px-8 md:columns-3 xl:columns-4">
+          {photos.map((p, i) => (
+            <div key={p.id} className="group relative mb-2 break-inside-avoid sm:mb-3">
+              <button
+                onClick={() => start(i)}
+                className="block w-full overflow-hidden rounded-sm bg-line"
+                style={{ aspectRatio: `${p.width} / ${p.height}` }}
+                aria-label={`Open photo ${i + 1} of ${photos.length}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.thumb} alt="" width={p.width} height={p.height} loading="lazy" decoding="async" onError={onImgError} className="h-full w-full object-cover" />
+              </button>
+              <a
+                href={dl(p.id)}
+                aria-label={`Download original of photo ${i + 1}`}
+                className="absolute bottom-2 right-2 rounded-full bg-white/90 px-3 py-1 text-xs font-medium shadow opacity-100 md:opacity-0 md:transition md:group-hover:opacity-100 md:focus-visible:opacity-100"
+              >
+                Download
+              </a>
+            </div>
+          ))}
+        </main>
+      )}
+
+      {open !== null && (
+        <Lightbox
+          photos={photos}
+          index={open}
+          setIndex={setOpen}
+          playing={playing}
+          setPlaying={setPlaying}
+          onClose={close}
+          downloadHref={dl}
+          onImgError={onImgError}
+        />
+      )}
+    </div>
+  );
+}
+
+function Lightbox({
+  photos,
+  index,
+  setIndex,
+  playing,
+  setPlaying,
+  onClose,
+  downloadHref,
+  onImgError,
+}: {
+  photos: ViewerPhoto[];
+  index: number;
+  setIndex: (fn: (i: number | null) => number) => void;
+  playing: boolean;
+  setPlaying: (v: boolean) => void;
+  onClose: () => void;
+  downloadHref: (id: string) => string;
+  onImgError: () => void;
+}) {
+  const root = useRef<HTMLDivElement>(null);
+  const closeBtn = useRef<HTMLButtonElement>(null);
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const n = photos.length;
+  const photo = photos[index];
+
+  const go = useCallback((delta: number) => setIndex((i) => (((i ?? 0) + delta) % n + n) % n), [n, setIndex]);
+
+  // Keyboard: arrows, escape, space toggles the slideshow.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "ArrowRight") go(1);
+      else if (e.key === "ArrowLeft") go(-1);
+      else if (e.key === "Escape") onClose();
+      else if (e.key === " ") {
+        e.preventDefault();
+        setPlaying(!playing);
+      } else if (e.key === "Tab") {
+        // Keep focus inside the dialog.
+        const f = root.current?.querySelectorAll<HTMLElement>("button, a[href]");
+        if (!f?.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) (e.preventDefault(), last.focus());
+        else if (!e.shiftKey && document.activeElement === last) (e.preventDefault(), first.focus());
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [go, onClose, playing, setPlaying]);
+
+  // Slideshow timer restarts on every slide so manual navigation gets a full interval.
+  useEffect(() => {
+    if (!playing) return;
+    const t = setTimeout(() => go(1), SLIDE_MS);
+    return () => clearTimeout(t);
+  }, [playing, index, go]);
+
+  // Fullscreen with the slideshow, scroll lock, initial focus.
+  useEffect(() => {
+    if (playing && !document.fullscreenElement) root.current?.requestFullscreen?.().catch(() => {});
+  }, [playing]);
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeBtn.current?.focus();
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
+  // Preload neighbours so next/prev feels instant.
+  useEffect(() => {
+    for (const d of [1, -1, 2]) {
+      const p = photos[(((index + d) % n) + n) % n];
+      if (p) new Image().src = p.preview;
+    }
+  }, [index, n, photos]);
+
+  return (
+    <div
+      ref={root}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Photo ${index + 1} of ${n}`}
+      className="fixed inset-0 z-50 flex touch-pan-y select-none flex-col bg-black text-white"
+      onPointerDown={(e) => (touch.current = { x: e.clientX, y: e.clientY })}
+      onPointerUp={(e) => {
+        const s = touch.current;
+        touch.current = null;
+        if (!s) return;
+        const dx = e.clientX - s.x;
+        const dy = e.clientY - s.y;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+      }}
+    >
+      <div className="flex items-center justify-between gap-2 px-3 py-3 text-sm">
+        <span className="tabular-nums text-white/70">{index + 1} / {n}</span>
+        <div className="flex items-center gap-2">
+          <button className="rounded-full bg-white/10 px-3 py-1.5 hover:bg-white/20" onClick={() => setPlaying(!playing)} aria-pressed={playing}>
+            {playing ? "Pause" : "Play"}
+          </button>
+          <a className="rounded-full bg-white/10 px-3 py-1.5 hover:bg-white/20" href={downloadHref(photo.id)}>Download</a>
+          <button ref={closeBtn} className="rounded-full bg-white/10 px-3 py-1.5 hover:bg-white/20" onClick={onClose}>Close</button>
+        </div>
+      </div>
+
+      <div className="relative min-h-0 flex-1">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          key={photo.id}
+          src={photo.preview}
+          alt={`Photo ${index + 1} of ${n}`}
+          onError={onImgError}
+          draggable={false}
+          className="absolute inset-0 h-full w-full object-contain"
+        />
+        {n > 1 && (
+          <>
+            <button aria-label="Previous photo" onClick={() => go(-1)} className="absolute left-2 top-1/2 hidden -translate-y-1/2 rounded-full bg-white/10 px-4 py-3 text-xl hover:bg-white/20 md:block">&lsaquo;</button>
+            <button aria-label="Next photo" onClick={() => go(1)} className="absolute right-2 top-1/2 hidden -translate-y-1/2 rounded-full bg-white/10 px-4 py-3 text-xl hover:bg-white/20 md:block">&rsaquo;</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -2,3 +2,9 @@
 node_modules/
 serve.js
 .claude/
+.next/
+.data/
+.env*
+!.env.example
+next-env.d.ts
+*.tsbuildinfo

@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /g/
+Disallow: /api/
 
 Sitemap: https://www.lilylynnephotography.com/sitemap.xml

@@ -9,16 +9,17 @@ the Denton, Texas area (Aubrey, Denton, Pilot Point, Sanger).
 
 ## Stack
 
-Static HTML, one stylesheet, one small vanilla JS file. No build step, no
-dependencies, no framework — the whole site is two documents plus assets, so it
-deploys anywhere and there is nothing to keep upgraded.
+The marketing pages are still plain static HTML, one stylesheet and one small
+vanilla JS file, now served from `public/` by the Next.js project that also
+hosts the private gallery app (see "Private client galleries" below). The
+marketing pages do not use React or any build step of their own.
 
 ```
-css/styles.css        design system (tokens → components → responsive)
-js/main.js            nav, scroll reveals, botanical draw-in, form validation
-assets/opt/           web-ready image derivatives (WebP + JPG fallback)
-assets/gallery/       original photographs (not deployed)
-assets/botanicals.svg the hand-drawn botanical marks, also inlined in each page
+public/css/styles.css        design system (tokens → components → responsive)
+public/js/main.js            nav, scroll reveals, botanical draw-in, form validation
+public/assets/opt/           web-ready image derivatives (WebP + JPG fallback)
+public/assets/gallery/       original photographs (not deployed)
+public/assets/botanicals.svg the hand-drawn botanical marks, also inlined in each page
 ```
 
 ## Design system
@@ -85,3 +86,63 @@ node serve.js
 ```
 
 Then open <http://localhost:8811>.
+
+
+## Private client galleries
+
+A Pic-Time replacement lives in the same project. Piper uploads a gallery,
+sends the client a private link, and the client views the photos in a grid and
+lightbox and downloads them. It is **not linked from the marketing site**: it
+is only reachable by a shared `/g/<random link>` or by typing `/admin`. Every
+gallery route sends `noindex`, and `robots.txt` disallows `/admin`, `/g/`, `/api/`.
+
+| Piece | What it is |
+|---|---|
+| `/admin` | Piper's login, dashboard, gallery creation, drag and drop upload, zip, delete |
+| `/g/[slug]` | Client view: optional password, grid, lightbox, slideshow, original download, "Download all" zip |
+| `/api/cron/daily` | Vercel cron (daily): marks expired galleries, logs a reminder, deletes files after a 3 day grace period |
+| Neon Postgres | Gallery and photo records (`db/schema.sql`) |
+| Cloudflare R2 | The photo files, private bucket, browser uploads straight to it with presigned URLs |
+
+Branding and every limit (10 galleries, 5 GB each, 60 day expiry) are in
+`studio.config.ts`. The marketing pages are served through three rewrites in
+`next.config.ts` (`/`, `/gallery`, `/contact`).
+
+### One-time setup
+
+1. **Neon:** Vercel project, Storage tab, add Neon Postgres. Vercel sets
+   `DATABASE_URL`. Then run the schema once: `DATABASE_URL="<value>" npm run db:migrate`.
+2. **R2:** create a private bucket (Cloudflare dashboard, R2). Create an API
+   token with Object Read & Write scoped to that bucket. Apply CORS so browsers
+   can upload directly (replace the origin if you use another domain):
+   ```json
+   [{"AllowedOrigins":["https://www.lilylynnephotography.com"],"AllowedMethods":["GET","PUT","HEAD"],"AllowedHeaders":["*"],"ExposeHeaders":["ETag"],"MaxAgeSeconds":3600}]
+   ```
+   (R2, the bucket, Settings, CORS Policy.) Do not enable public access.
+3. **Environment variables** in the Vercel project (see `.env.example`):
+   `ADMIN_EMAIL`, `ADMIN_PASSWORD_HASH` (`npm run hash-password -- "password"`),
+   `SESSION_SECRET` (`openssl rand -hex 32`), `CRON_SECRET` (any long random
+   string; Vercel then authenticates the cron with it), `APP_URL`,
+   `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`.
+   The existing `ALTCHA_HMAC_KEY` and `RESEND_API_KEY` keep working for the contact form.
+4. Deploy. The project is set to the Next.js framework in `vercel.json`.
+
+### Local development
+
+```bash
+cp .env.example .env.local     # use DATABASE_URL=pglite://./.data/pg and R2_ENDPOINT=http://localhost:9477
+npm run db:migrate             # creates the local embedded Postgres
+npm run mock-s3                # local stand-in for R2 (separate terminal)
+npm run dev                    # http://localhost:3000
+```
+
+The embedded Postgres (PGlite) and the mock S3 server are development tools
+only. Production uses Neon and R2.
+
+### Notes
+
+- Originals must be JPEG, PNG or WebP the browser can decode (max 100 MB each).
+  Previews (2000 px) and thumbnails (400 px) are made in the browser before upload.
+- The expiry reminder is a log line only. TODO: email it from
+  `src/lib/expiry.ts` (Resend is already configured for the contact form).
+- On Vercel Hobby, cron jobs run at most once a day, which is all this needs.
