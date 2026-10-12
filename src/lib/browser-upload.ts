@@ -1,7 +1,7 @@
 // Browser-only helpers: resize images with canvas and PUT blobs straight to storage.
 
-export const PREVIEW_EDGE = 2000;
-export const THUMB_EDGE = 400;
+export const PREVIEW_EDGE = 2800;
+export const THUMB_EDGE = 900;
 
 export interface ResizedImage {
   width: number; // of the original, after EXIF rotation
@@ -36,8 +36,8 @@ export async function resizeImage(file: File): Promise<ResizedImage> {
     throw new Error("This browser could not read the image.");
   }
   try {
-    const preview = await toJpeg(bitmap, PREVIEW_EDGE, 0.86);
-    const thumb = await toJpeg(bitmap, THUMB_EDGE, 0.8);
+    const preview = await toJpeg(bitmap, PREVIEW_EDGE, 0.92);
+    const thumb = await toJpeg(bitmap, THUMB_EDGE, 0.86);
     return { width: bitmap.width, height: bitmap.height, preview, thumb };
   } finally {
     bitmap.close();
