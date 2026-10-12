@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Brand } from "@/components/Brand";
 import { formatDate } from "@/lib/format";
+import { DownloadAll } from "./DownloadAll";
 
 export interface ViewerPhoto {
   id: string;
@@ -73,9 +74,7 @@ export function Viewer({
           {photos.length > 0 && (
             <button className="btn" onClick={() => start(0, true)}>Slideshow</button>
           )}
-          {hasZip && (
-            <a className="btn btn-primary" href={`/api/g/${slug}/zip`}>Download all</a>
-          )}
+          {photos.length > 0 && <DownloadAll slug={slug} title={title} manualZip={hasZip} />}
         </div>
       </header>
 
