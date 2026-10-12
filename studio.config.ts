@@ -17,7 +17,7 @@ export const studio = {
   monthlyReadBudget: 6_000_000, // signed read URLs issued per month (counts every thumbnail, preview, download)
   monthlyWriteBudget: 600_000, // upload URLs and list calls per month
 
-  maxActiveGalleries: 10,
+  maxActiveGalleries: 30,
   maxBytesPerGallery: 5 * 1024 ** 3, // 5 GB, counts originals + previews + thumbnails + zip
   defaultExpiryDays: 60,
 
