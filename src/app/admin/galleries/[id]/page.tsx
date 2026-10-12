@@ -4,7 +4,7 @@ import { studio } from "@studio";
 import { AdminHeader } from "@/components/AdminHeader";
 import { AdminPhotos } from "@/components/AdminPhotos";
 import { CopyButton } from "@/components/CopyButton";
-import { DeleteGalleryButton, SettingsForm, ZipManager } from "@/components/GalleryTools";
+import { EditGallery } from "@/components/EditGallery";
 import { Uploader } from "@/components/Uploader";
 import { requireAdmin } from "@/lib/auth";
 import { getGalleryById, isExpired, listReadyPhotos } from "@/lib/db";
@@ -45,61 +45,55 @@ export default async function ManageGallery({ params }: { params: Promise<{ id: 
   return (
     <>
       <AdminHeader />
-      <main className="mx-auto max-w-5xl space-y-8 px-4 py-8">
-        <div>
-          <Link href="/admin" className="text-sm text-muted underline">All galleries</Link>
-          <h1 className="display mt-2 text-4xl">{g.title}</h1>
-          <p className="text-muted">
-            {g.client_name} · {expired ? `Expired ${formatDate(g.expires_at)}` : `Expires ${formatDate(g.expires_at)}`}
-          </p>
+      <main className="mx-auto max-w-6xl px-4 py-8">
+        <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <Link href="/admin" className="text-sm text-muted underline">All galleries</Link>
+            <h1 className="display mt-1 text-4xl">{g.title}</h1>
+            <p className="text-muted">
+              {g.client_name} · {expired ? `Expired ${formatDate(g.expires_at)}` : `Expires ${formatDate(g.expires_at)}`}
+              {g.password_hash ? " · Password protected" : ""}
+            </p>
+          </div>
+          <EditGallery
+            galleryId={g.id}
+            title={g.title}
+            photoCount={photos.length}
+            expiresOn={toDateInput(g.expires_at)}
+            hasPassword={!!g.password_hash}
+            zipName={g.zip_key?.split("/").pop() ?? null}
+            zipBytes={g.zip_bytes}
+          />
         </div>
 
-        <section className="card space-y-3 p-5">
-          <h2 className="display text-2xl">Client link</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <code className="min-w-0 flex-1 truncate rounded bg-paper px-3 py-2 text-sm">{shareBase}/g/{g.slug}</code>
-            <CopyButton path={`/g/${g.slug}`} />
-            <Link className="btn" href={`/g/${g.slug}`} target="_blank">Open</Link>
-          </div>
-          <div>
-            <div className="mb-1 flex justify-between text-xs text-muted">
-              <span>{formatBytes(g.total_bytes)} of {formatBytes(studio.maxBytesPerGallery)}</span>
-              <span>{photos.length} photos</span>
-            </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-line"><div className="h-full bg-accent" style={{ width: `${usedPct}%` }} /></div>
-          </div>
-        </section>
-
-        {expired ? (
-          <p className="card border-red-200 p-4 text-sm text-red-800">
-            This gallery has expired and the client can no longer open it. Set a new date below to reopen it
+        {expired && (
+          <p className="card mb-6 border-red-200 p-4 text-sm text-red-800">
+            This gallery has expired and the client can no longer open it. Use Edit to set a new date and reopen it
             {g.purged_at ? ", but its files were already deleted." : "."}
           </p>
-        ) : (
-          <section>
-            <h2 className="display mb-3 text-2xl">Upload photos</h2>
-            <Uploader galleryId={g.id} startOrder={maxOrder + 1} />
-          </section>
         )}
 
-        <section>
-          <h2 className="display mb-3 text-2xl">Photos</h2>
+        <div className="grid items-start gap-8 lg:grid-cols-[1fr_17rem]">
           <AdminPhotos galleryId={g.id} photos={adminPhotos} />
-        </section>
 
-        <section className="card p-5">
-          <h2 className="display mb-3 text-2xl">Download all (zip)</h2>
-          <ZipManager galleryId={g.id} zipName={g.zip_key?.split("/").pop() ?? null} zipBytes={g.zip_bytes} />
-        </section>
-
-        <section className="card p-5">
-          <h2 className="display mb-3 text-2xl">Settings</h2>
-          <SettingsForm galleryId={g.id} expiresOn={toDateInput(g.expires_at)} hasPassword={!!g.password_hash} />
-        </section>
-
-        <section className="flex justify-end border-t border-line pt-6">
-          <DeleteGalleryButton galleryId={g.id} title={g.title} photoCount={photos.length} />
-        </section>
+          <aside className="space-y-5 order-first lg:sticky lg:top-6 lg:order-last">
+            <div className="card space-y-3 p-4">
+              <p className="label !mb-0">Client link</p>
+              <code className="block truncate rounded bg-paper px-3 py-2 text-xs">{shareBase}/g/{g.slug}</code>
+              <div className="flex gap-2">
+                <CopyButton path={`/g/${g.slug}`} />
+                <Link className="btn" href={`/g/${g.slug}`} target="_blank">Open</Link>
+              </div>
+              <div>
+                <div className="mb-1 flex justify-between text-xs text-muted">
+                  <span>{formatBytes(g.total_bytes)} of {formatBytes(studio.maxBytesPerGallery)}</span>
+                </div>
+                <div className="h-1.5 overflow-hidden rounded-full bg-line"><div className="h-full bg-accent" style={{ width: `${usedPct}%` }} /></div>
+              </div>
+            </div>
+            {!expired && <Uploader galleryId={g.id} startOrder={maxOrder + 1} />}
+          </aside>
+        </div>
       </main>
     </>
   );

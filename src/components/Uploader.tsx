@@ -136,6 +136,9 @@ export function Uploader({ galleryId, startOrder }: { galleryId: string; startOr
   const loadedBytes = jobs.reduce((s, j) => s + (j.status === "done" ? j.total : j.loaded), 0);
   const overall = totalBytes ? Math.round((loadedBytes / totalBytes) * 100) : 0;
 
+  const active = jobs.filter((j) => j.status !== "done");
+  const finished = jobs.length > 0 && done === jobs.length;
+
   return (
     <section>
       <label
@@ -146,12 +149,12 @@ export function Uploader({ galleryId, startOrder }: { galleryId: string; startOr
           setDragging(false);
           addFiles(e.dataTransfer.files);
         }}
-        className={`card flex cursor-pointer flex-col items-center justify-center gap-2 border-dashed px-6 py-12 text-center transition ${
+        className={`card flex cursor-pointer flex-col items-center justify-center gap-1 border-dashed px-4 py-8 text-center transition ${
           dragging ? "border-accent bg-white ring-2 ring-accent" : ""
         }`}
       >
-        <span className="display text-2xl">Drop photos here</span>
-        <span className="text-sm text-muted">or click to choose. JPEG, PNG or WebP. Originals are kept untouched.</span>
+        <span className="display text-xl">Add photos</span>
+        <span className="text-xs text-muted">Drop or click. JPEG, PNG, WebP. Originals kept untouched.</span>
         <input
           data-testid="file-input"
           type="file"
@@ -164,51 +167,50 @@ export function Uploader({ galleryId, startOrder }: { galleryId: string; startOr
           }}
         />
       </label>
-      {skipped > 0 && <p className="mt-2 text-sm text-red-700">{skipped} file(s) skipped (not JPEG, PNG or WebP).</p>}
+      {skipped > 0 && <p className="mt-2 text-xs text-red-700">{skipped} file(s) skipped (not JPEG, PNG or WebP).</p>}
 
       {jobs.length > 0 && (
-        <div className="card mt-4 p-4">
-          <div className="flex items-center justify-between gap-3 text-sm">
+        <div className="mt-3 text-sm">
+          <div className="flex items-center justify-between gap-3">
             <span>
-              {done} of {jobs.length} uploaded{failed.length ? `, ${failed.length} failed` : ""}
+              {finished ? `${done} uploaded` : `${done} of ${jobs.length} uploaded`}
+              {failed.length ? `, ${failed.length} failed` : ""}
             </span>
             <span className="text-muted">{overall}%</span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={overall} aria-valuemin={0} aria-valuemax={100} aria-label="Overall upload progress">
+          <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={overall} aria-valuemin={0} aria-valuemax={100} aria-label="Overall upload progress">
             <div className="h-full rounded-full bg-accent transition-[width]" style={{ width: `${overall}%` }} />
           </div>
           {failed.length > 0 && (
-            <button className="btn mt-3" onClick={() => retry(failed.map((j) => j.id))}>
+            <button className="btn mt-3 w-full" onClick={() => retry(failed.map((j) => j.id))}>
               Retry {failed.length} failed
             </button>
           )}
-          <ul className="mt-4 max-h-80 divide-y divide-line overflow-y-auto text-sm">
-            {jobs.map((j) => (
-              <li key={j.id} className="flex items-center gap-3 py-2">
-                <span className="min-w-0 flex-1 truncate">{j.name}</span>
-                <span className="w-16 shrink-0 text-right text-muted">{formatBytes(j.size)}</span>
-                <span className="w-32 shrink-0">
-                  {j.status === "error" ? (
-                    <button className="text-red-700 underline" title={j.error} onClick={() => retry([j.id])}>
-                      Failed. Retry
-                    </button>
-                  ) : j.status === "done" ? (
-                    <span className="text-green-700">Done</span>
-                  ) : j.status === "queued" ? (
-                    <span className="text-muted">Waiting</span>
-                  ) : (
-                    <span className="block h-1.5 overflow-hidden rounded-full bg-line">
-                      <span
-                        className="block h-full bg-accent transition-[width]"
-                        style={{ width: j.status === "resizing" ? "4%" : `${Math.round((j.loaded / j.total) * 100)}%` }}
-                      />
-                    </span>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
-          {failed[0]?.error && <p className="mt-2 text-sm text-red-700">{failed[0].error}</p>}
+          {/* Finished files drop out of the list so it never grows with the batch. */}
+          {active.length > 0 && (
+            <ul className="mt-3 max-h-44 divide-y divide-line overflow-y-auto text-xs">
+              {active.map((j) => (
+                <li key={j.id} className="flex items-center gap-2 py-1.5">
+                  <span className="min-w-0 flex-1 truncate">{j.name}</span>
+                  <span className="w-14 shrink-0 text-right">
+                    {j.status === "error" ? (
+                      <button className="text-red-700 underline" title={j.error} onClick={() => retry([j.id])}>Retry</button>
+                    ) : j.status === "queued" ? (
+                      <span className="text-muted">Waiting</span>
+                    ) : (
+                      <span className="block h-1 overflow-hidden rounded-full bg-line">
+                        <span
+                          className="block h-full bg-accent transition-[width]"
+                          style={{ width: j.status === "resizing" ? "4%" : `${Math.round((j.loaded / j.total) * 100)}%` }}
+                        />
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {failed[0]?.error && <p className="mt-2 text-xs text-red-700">{failed[0].error}</p>}
         </div>
       )}
     </section>

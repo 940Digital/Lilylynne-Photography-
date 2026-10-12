@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { api, putBlob, withRetry } from "@/lib/browser-upload";
 import { formatBytes } from "@/lib/format";
 
-export function SettingsForm({ galleryId, expiresOn, hasPassword }: { galleryId: string; expiresOn: string; hasPassword: boolean }) {
+export function SettingsForm({ galleryId, expiresOn, hasPassword, onSaved }: { galleryId: string; expiresOn: string; hasPassword: boolean; onSaved?: () => void }) {
   const router = useRouter();
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
@@ -23,6 +23,7 @@ export function SettingsForm({ galleryId, expiresOn, hasPassword }: { galleryId:
       setMsg("Saved.");
       (e.target as HTMLFormElement).reset();
       router.refresh();
+      onSaved?.();
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Could not save.");
     }
@@ -47,7 +48,7 @@ export function SettingsForm({ galleryId, expiresOn, hasPassword }: { galleryId:
       <div className="flex items-center gap-3 sm:col-span-2">
         <button className="btn btn-primary" disabled={busy}>Save</button>
         {hasPassword && (
-          <button type="button" className="btn" onClick={removePassword}>Remove password</button>
+          <button type="button" className="text-sm text-muted underline" onClick={removePassword}>Remove password</button>
         )}
         {msg && <span className="text-sm text-muted" role="status">{msg}</span>}
       </div>
@@ -89,7 +90,7 @@ export function ZipManager({ galleryId, zipName, zipBytes }: { galleryId: string
       {zipName ? (
         <p className="text-sm">
           <strong>{zipName}</strong> <span className="text-muted">({formatBytes(zipBytes)})</span>{" "}
-          <button className="ml-2 text-red-700 underline" onClick={remove}>Remove</button>
+          <button className="ml-2 text-muted underline" onClick={remove}>Remove</button>
         </p>
       ) : (
         <p className="text-sm text-muted">No zip yet. The client sees a Download all button once you add one.</p>
