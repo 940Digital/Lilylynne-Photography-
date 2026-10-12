@@ -22,40 +22,39 @@ export default async function AdminDashboard() {
 
   const activeCount = results.filter((g) => !isExpired(g)).length;
   const usedBytes = results.reduce((sum, g) => sum + g.total_bytes, 0);
-  const pct = Math.min(100, Math.round((activeCount / studio.maxActiveGalleries) * 100));
   const usage = await currentUsage();
   const meters = [
+    { label: "Galleries", text: `${activeCount} of ${studio.maxActiveGalleries}`, value: activeCount / studio.maxActiveGalleries },
     { label: "Storage", text: `${formatBytes(usedBytes)} of ${formatBytes(studio.maxTotalBytes)}`, value: usedBytes / studio.maxTotalBytes },
     { label: "Views this month", text: `${usage.read.toLocaleString()} of ${studio.monthlyReadBudget.toLocaleString()}`, value: usage.read / studio.monthlyReadBudget },
     { label: "Uploads this month", text: `${usage.write.toLocaleString()} of ${studio.monthlyWriteBudget.toLocaleString()}`, value: usage.write / studio.monthlyWriteBudget },
   ];
+  // Limits only matter near the ceiling, so stay hidden until one is close.
+  const nearLimit = meters.filter((m) => m.value >= 0.7);
   const base = env.appUrl;
 
   return (
     <>
       <AdminHeader />
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <section className="card p-5">
-          <p className="text-lg">
-            <strong>{activeCount}</strong> of {studio.maxActiveGalleries} galleries
-          </p>
-          <div className="mt-3 h-2 overflow-hidden rounded-full bg-line" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Active galleries used">
-            <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
-          </div>
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
-            {meters.map((m) => (
-              <div key={m.label}>
-                <div className="flex justify-between text-xs text-muted"><span>{m.label}</span><span>{m.text}</span></div>
-                <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line">
-                  <div className={`h-full rounded-full ${m.value > 0.8 ? "bg-red-700" : "bg-accent"}`} style={{ width: `${Math.min(100, Math.round(m.value * 100))}%` }} />
+        {nearLimit.length > 0 && (
+          <section className="card mb-8 p-5">
+            <p className="text-sm font-medium">Getting close to a limit</p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
+              {nearLimit.map((m) => (
+                <div key={m.label}>
+                  <div className="flex justify-between text-xs text-muted"><span>{m.label}</span><span>{m.text}</span></div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line">
+                    <div className={`h-full rounded-full ${m.value >= 0.9 ? "bg-red-700" : "bg-accent"}`} style={{ width: `${Math.min(100, Math.round(m.value * 100))}%` }} />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-xs text-muted">These limits keep the site inside Cloudflare's free tier. At the limit, uploads or viewing pause until space or the new month frees up.</p>
-        </section>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-muted">At the limit, uploads or viewing pause until space or the new month frees up.</p>
+          </section>
+        )}
 
-        <h1 className="display mb-4 mt-10 text-3xl">Galleries</h1>
+        <h1 className="display mb-4 text-3xl">Galleries</h1>
         {results.length === 0 ? (
           <div className="card p-8 text-center text-muted">
             No galleries yet. <Link className="underline" href="/admin/new">Create the first one.</Link>
