@@ -8,6 +8,8 @@ import { deletePrefix, galleryPrefix } from "@/lib/storage";
 type Ctx = { params: Promise<{ id: string }> };
 
 const patchSchema = z.object({
+  title: z.string().trim().min(1).max(120).optional(),
+  clientName: z.string().trim().min(1).max(120).optional(),
   expiresOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   // Empty string removes the password.
   password: z.string().max(100).optional(),
@@ -25,6 +27,8 @@ export async function PATCH(req: Request, ctx: Ctx) {
   if (!g) return fail(404, "Not found.");
   if (g.purged_at) return fail(409, "This gallery's files were already deleted.");
 
+  if (data.title !== undefined) await exec("UPDATE galleries SET title = $1 WHERE id = $2", [data.title, g.id]);
+  if (data.clientName !== undefined) await exec("UPDATE galleries SET client_name = $1 WHERE id = $2", [data.clientName, g.id]);
   if (data.expiresOn) {
     const expiresAt = endOfDay(data.expiresOn);
     if (!Number.isFinite(expiresAt) || expiresAt <= nowSec()) return fail(400, "expiresOn: must be in the future.");

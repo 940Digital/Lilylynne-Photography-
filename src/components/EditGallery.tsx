@@ -6,6 +6,7 @@ import { DeleteGalleryButton, SettingsForm, ZipManager } from "@/components/Gall
 interface Props {
   galleryId: string;
   title: string;
+  clientName: string;
   photoCount: number;
   expiresOn: string;
   hasPassword: boolean;
@@ -31,6 +32,8 @@ export function EditGallery(p: Props) {
         <div className="space-y-6 p-5">
           <SettingsForm
             galleryId={p.galleryId}
+            title={p.title}
+            clientName={p.clientName}
             expiresOn={p.expiresOn}
             hasPassword={p.hasPassword}
             onSaved={() => dlg.current?.close()}

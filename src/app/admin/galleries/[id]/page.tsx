@@ -58,6 +58,7 @@ export default async function ManageGallery({ params }: { params: Promise<{ id: 
           <EditGallery
             galleryId={g.id}
             title={g.title}
+            clientName={g.client_name}
             photoCount={photos.length}
             expiresOn={toDateInput(g.expires_at)}
             hasPassword={!!g.password_hash}

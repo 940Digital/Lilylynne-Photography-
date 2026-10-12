@@ -5,23 +5,43 @@ import { useRef, useState } from "react";
 import { api, putBlob, withRetry } from "@/lib/browser-upload";
 import { formatBytes } from "@/lib/format";
 
-export function SettingsForm({ galleryId, expiresOn, hasPassword, onSaved }: { galleryId: string; expiresOn: string; hasPassword: boolean; onSaved?: () => void }) {
+export function SettingsForm({
+  galleryId,
+  title,
+  clientName,
+  expiresOn,
+  hasPassword,
+  onSaved,
+}: {
+  galleryId: string;
+  title: string;
+  clientName: string;
+  expiresOn: string;
+  hasPassword: boolean;
+  onSaved?: () => void;
+}) {
   const router = useRouter();
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [clearPw, setClearPw] = useState(false);
 
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setMsg("");
     const f = new FormData(e.currentTarget);
-    const body: Record<string, string> = { expiresOn: String(f.get("expiresOn")) };
+    const body: Record<string, string> = {
+      title: String(f.get("title")),
+      clientName: String(f.get("clientName")),
+      expiresOn: String(f.get("expiresOn")),
+    };
     const pw = String(f.get("password") ?? "");
     if (pw) body.password = pw;
+    else if (clearPw) body.password = "";
     try {
       await api(`/api/admin/galleries/${galleryId}`, "PATCH", body);
-      setMsg("Saved.");
-      (e.target as HTMLFormElement).reset();
+      setClearPw(false);
+      (e.target as HTMLFormElement).password.value = "";
       router.refresh();
       onSaved?.();
     } catch (err) {
@@ -30,26 +50,41 @@ export function SettingsForm({ galleryId, expiresOn, hasPassword, onSaved }: { g
     setBusy(false);
   }
 
-  async function removePassword() {
-    await api(`/api/admin/galleries/${galleryId}`, "PATCH", { password: "" });
-    router.refresh();
-  }
+  const pwSet = hasPassword && !clearPw;
 
   return (
     <form onSubmit={save} className="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label className="label" htmlFor="s-title">Gallery name</label>
+        <input id="s-title" name="title" required maxLength={120} defaultValue={title} className="field" />
+      </div>
+      <div>
+        <label className="label" htmlFor="s-client">Client</label>
+        <input id="s-client" name="clientName" required maxLength={120} defaultValue={clientName} className="field" />
+      </div>
       <div>
         <label className="label" htmlFor="s-exp">Expires on</label>
         <input id="s-exp" name="expiresOn" type="date" required defaultValue={expiresOn} className="field" />
       </div>
       <div>
-        <label className="label" htmlFor="s-pw">{hasPassword ? "Change password" : "Add a password"}</label>
-        <input id="s-pw" name="password" minLength={4} maxLength={100} autoComplete="off" className="field" placeholder={hasPassword ? "New password" : "Optional"} />
+        <label className="label flex justify-between" htmlFor="s-pw">
+          <span>Password</span>
+          {pwSet && (
+            <button type="button" className="underline" onClick={() => setClearPw(true)}>Remove</button>
+          )}
+        </label>
+        <input
+          id="s-pw"
+          name="password"
+          minLength={4}
+          maxLength={100}
+          autoComplete="off"
+          className="field"
+          placeholder={pwSet ? "Set. Type to change" : clearPw ? "Will be removed on save" : "None"}
+        />
       </div>
       <div className="flex items-center gap-3 sm:col-span-2">
         <button className="btn btn-primary" disabled={busy}>Save</button>
-        {hasPassword && (
-          <button type="button" className="text-sm text-muted underline" onClick={removePassword}>Remove password</button>
-        )}
         {msg && <span className="text-sm text-muted" role="status">{msg}</span>}
       </div>
     </form>
