@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { studio } from "@studio";
 import { Brand } from "@/components/Brand";
 import { formatDate } from "@/lib/format";
 import { DownloadAll } from "./DownloadAll";
@@ -102,6 +103,10 @@ export function Viewer({
           ))}
         </main>
       )}
+
+      <footer className="px-4 pb-12 pt-2 text-center text-sm text-muted">
+        <a className="underline underline-offset-4 hover:text-ink" href="/">Visit {studio.publicDomain.replace(/^www\./, "")}</a>
+      </footer>
 
       {open !== null && (
         <Lightbox
