@@ -50,12 +50,9 @@ export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: 
 
   return (
     <div>
-      <div className="mb-3 flex h-8 items-center gap-3">
-        <h2 className="display text-2xl">
-          Photos <span className="text-base text-muted">{photos.length}</span>
-        </h2>
-        {photos.length > 0 &&
-          (selecting ? (
+      {photos.length > 0 && (
+        <div className="mb-3 flex h-8 items-center gap-2">
+          {selecting ? (
             <>
               <button className="btn btn-sm btn-danger" disabled={!picked.size || busy} onClick={removePicked}>
                 {busy ? "Deleting..." : `Delete ${picked.size || ""}`.trim()}
@@ -64,8 +61,9 @@ export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: 
             </>
           ) : (
             <button className="btn btn-sm" onClick={() => setSelecting(true)}>Select</button>
-          ))}
-      </div>
+          )}
+        </div>
+      )}
 
       {!photos.length ? (
         <p className="card p-8 text-center text-muted">No photos yet. Drop them anywhere on this page, or use Add photos.</p>
