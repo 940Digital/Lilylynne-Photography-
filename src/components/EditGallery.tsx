@@ -9,7 +9,8 @@ interface Props {
   clientName: string;
   photoCount: number;
   expiresOn: string;
-  hasPassword: boolean;
+  password: string;
+  hasLegacyPassword: boolean;
   zipName: string | null;
   zipBytes: number;
 }
@@ -35,7 +36,8 @@ export function EditGallery(p: Props) {
             title={p.title}
             clientName={p.clientName}
             expiresOn={p.expiresOn}
-            hasPassword={p.hasPassword}
+            password={p.password}
+            hasLegacyPassword={p.hasLegacyPassword}
             onSaved={() => dlg.current?.close()}
           />
           <div className="border-t border-line pt-5">

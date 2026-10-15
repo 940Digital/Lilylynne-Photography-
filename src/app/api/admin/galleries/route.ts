@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { studio } from "@studio";
-import { hashPassword, randomSlug } from "@/lib/crypto";
+import { randomSlug } from "@/lib/crypto";
 import { countActiveGalleries, exec, isUniqueViolation, nowSec } from "@/lib/db";
 import { endOfDay } from "@/lib/format";
 import { fail, guardAdmin, json, parseBody } from "@/lib/http";
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   }
 
   const id = crypto.randomUUID();
-  const passwordHash = data.password ? await hashPassword(data.password) : null;
+  const passwordHash = data.password || null; // plain text on purpose, see crypto.ts
   for (let attempt = 0; attempt < 3; attempt++) {
     const slug = randomSlug(16);
     try {

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { hashPassword } from "@/lib/crypto";
 import { exec, getGalleryById, nowSec } from "@/lib/db";
 import { endOfDay } from "@/lib/format";
 import { fail, guardAdmin, idParam, json, parseBody } from "@/lib/http";
@@ -36,7 +35,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
   }
   if (data.password !== undefined) {
     if (data.password && data.password.length < 4) return fail(400, "password: use at least 4 characters.");
-    const hash = data.password ? await hashPassword(data.password) : null;
+    const hash = data.password || null; // plain text on purpose, see crypto.ts
     await exec("UPDATE galleries SET password_hash = $1 WHERE id = $2", [hash, g.id]);
   }
   return json({ ok: true });

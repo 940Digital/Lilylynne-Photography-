@@ -60,6 +60,15 @@ async function hmacKey(secret: string): Promise<CryptoKey> {
   return crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
 }
 
+// Gallery passwords are stored as plain text so the photographer can read them back in the
+// admin. Older galleries still hold a pbkdf2 hash in the same column; both forms are accepted.
+export const isHashedPassword = (stored: string | null | undefined) => !!stored && stored.startsWith("pbkdf2:");
+
+export async function checkGalleryPassword(input: string, stored: string): Promise<boolean> {
+  if (isHashedPassword(stored)) return verifyPassword(input, stored);
+  return timingSafeEqual(enc.encode(input), enc.encode(stored));
+}
+
 export async function hmac(secret: string, data: string): Promise<string> {
   return b64url(await crypto.subtle.sign("HMAC", await hmacKey(secret), enc.encode(data)));
 }

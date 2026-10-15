@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { grantGalleryAccess } from "@/lib/auth";
-import { verifyPassword } from "@/lib/crypto";
+import { checkGalleryPassword } from "@/lib/crypto";
 import { getGalleryBySlug, isExpired } from "@/lib/db";
 import { fail, json, parseBody } from "@/lib/http";
 import { clearRateLimit, clientIp, hitRateLimit } from "@/lib/ratelimit";
@@ -21,7 +21,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ slug: string }
 
   const g = await getGalleryBySlug(slug.data);
   if (!g || isExpired(g)) return fail(404, "Not found.");
-  if (!g.password_hash || (await verifyPassword(data.password, g.password_hash))) {
+  if (!g.password_hash || (await checkGalleryPassword(data.password, g.password_hash))) {
     await clearRateLimit(limitKey);
     await grantGalleryAccess(g);
     return json({ ok: true });

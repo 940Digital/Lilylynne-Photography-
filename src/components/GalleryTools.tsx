@@ -10,20 +10,23 @@ export function SettingsForm({
   title,
   clientName,
   expiresOn,
-  hasPassword,
+  password,
+  hasLegacyPassword,
   onSaved,
 }: {
   galleryId: string;
   title: string;
   clientName: string;
   expiresOn: string;
-  hasPassword: boolean;
+  password: string;
+  hasLegacyPassword: boolean;
   onSaved?: () => void;
 }) {
   const router = useRouter();
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
-  const [clearPw, setClearPw] = useState(false);
+  // Older galleries hold an unreadable hash: blank means "leave it" unless Remove was pressed.
+  const [clearLegacy, setClearLegacy] = useState(false);
 
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,13 +38,15 @@ export function SettingsForm({
       clientName: String(f.get("clientName")),
       expiresOn: String(f.get("expiresOn")),
     };
-    const pw = String(f.get("password") ?? "");
-    if (pw) body.password = pw;
-    else if (clearPw) body.password = "";
+    const pw = String(f.get("password") ?? "").trim();
+    if (hasLegacyPassword && !clearLegacy) {
+      if (pw) body.password = pw;
+    } else {
+      body.password = pw; // blank removes it
+    }
     try {
       await api(`/api/admin/galleries/${galleryId}`, "PATCH", body);
-      setClearPw(false);
-      (e.target as HTMLFormElement).password.value = "";
+      setClearLegacy(false);
       router.refresh();
       onSaved?.();
     } catch (err) {
@@ -50,7 +55,7 @@ export function SettingsForm({
     setBusy(false);
   }
 
-  const pwSet = hasPassword && !clearPw;
+  const legacyKept = hasLegacyPassword && !clearLegacy;
 
   return (
     <form onSubmit={save} className="grid gap-4 sm:grid-cols-2">
@@ -69,18 +74,20 @@ export function SettingsForm({
       <div>
         <label className="label flex justify-between" htmlFor="s-pw">
           <span>Password</span>
-          {pwSet && (
-            <button type="button" className="underline" onClick={() => setClearPw(true)}>Remove</button>
+          {legacyKept && (
+            <button type="button" className="underline" onClick={() => setClearLegacy(true)}>Remove</button>
           )}
         </label>
         <input
+          key={password}
           id="s-pw"
           name="password"
           minLength={4}
           maxLength={100}
           autoComplete="off"
+          defaultValue={password}
           className="field"
-          placeholder={pwSet ? "Set. Type to change" : clearPw ? "Will be removed on save" : "None"}
+          placeholder={legacyKept ? "Set (hidden). Type a new one" : "None. Leave blank for no password"}
         />
       </div>
       <div className="flex items-center gap-3 sm:col-span-2">

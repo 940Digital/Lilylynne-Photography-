@@ -7,6 +7,7 @@ import { CopyButton } from "@/components/CopyButton";
 import { EditGallery } from "@/components/EditGallery";
 import { Uploader } from "@/components/Uploader";
 import { requireAdmin } from "@/lib/auth";
+import { isHashedPassword } from "@/lib/crypto";
 import { getGalleryById, isExpired, listReadyPhotos } from "@/lib/db";
 import { env } from "@/lib/env";
 import { formatBytes, formatDate, toDateInput } from "@/lib/format";
@@ -61,7 +62,8 @@ export default async function ManageGallery({ params }: { params: Promise<{ id: 
             clientName={g.client_name}
             photoCount={photos.length}
             expiresOn={toDateInput(g.expires_at)}
-            hasPassword={!!g.password_hash}
+            password={g.password_hash && !isHashedPassword(g.password_hash) ? g.password_hash : ""}
+            hasLegacyPassword={isHashedPassword(g.password_hash)}
             zipName={g.zip_key?.split("/").pop() ?? null}
             zipBytes={g.zip_bytes}
           />
