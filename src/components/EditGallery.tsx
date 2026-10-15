@@ -20,7 +20,7 @@ export function EditGallery(p: Props) {
   const dlg = useRef<HTMLDialogElement>(null);
   return (
     <>
-      <button className="btn" onClick={() => dlg.current?.showModal()}>Edit</button>
+      <button className="btn btn-sm" onClick={() => dlg.current?.showModal()}>Edit</button>
       <dialog
         ref={dlg}
         onClick={(e) => e.target === dlg.current && dlg.current?.close()}

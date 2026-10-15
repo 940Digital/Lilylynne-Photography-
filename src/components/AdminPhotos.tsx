@@ -50,20 +50,20 @@ export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: 
 
   return (
     <div>
-      <div className="mb-3 flex h-9 items-center justify-between gap-3">
+      <div className="mb-3 flex h-8 items-center gap-3">
         <h2 className="display text-2xl">
           Photos <span className="text-base text-muted">{photos.length}</span>
         </h2>
         {photos.length > 0 &&
           (selecting ? (
-            <div className="flex items-center gap-2">
-              <button className="btn btn-danger" disabled={!picked.size || busy} onClick={removePicked}>
+            <>
+              <button className="btn btn-sm btn-danger" disabled={!picked.size || busy} onClick={removePicked}>
                 {busy ? "Deleting..." : `Delete ${picked.size || ""}`.trim()}
               </button>
-              <button className="btn" onClick={stop}>Done</button>
-            </div>
+              <button className="btn btn-sm" onClick={stop}>Done</button>
+            </>
           ) : (
-            <button className="btn" onClick={() => setSelecting(true)}>Select</button>
+            <button className="btn btn-sm" onClick={() => setSelecting(true)}>Select</button>
           ))}
       </div>
 

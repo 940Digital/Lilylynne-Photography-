@@ -50,23 +50,25 @@ export default async function ManageGallery({ params }: { params: Promise<{ id: 
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>
             <Link href="/admin" className="text-sm text-muted underline">All galleries</Link>
-            <h1 className="display mt-1 text-4xl">{g.title}</h1>
+            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2">
+              <h1 className="display text-4xl">{g.title}</h1>
+              <EditGallery
+                galleryId={g.id}
+                title={g.title}
+                clientName={g.client_name}
+                photoCount={photos.length}
+                expiresOn={toDateInput(g.expires_at)}
+                password={g.password_hash && !isHashedPassword(g.password_hash) ? g.password_hash : ""}
+                hasLegacyPassword={isHashedPassword(g.password_hash)}
+                zipName={g.zip_key?.split("/").pop() ?? null}
+                zipBytes={g.zip_bytes}
+              />
+            </div>
             <p className="text-muted">
               {g.client_name} · {expired ? `Expired ${formatDate(g.expires_at)}` : `Expires ${formatDate(g.expires_at)}`}
               {g.password_hash ? " · Password protected" : ""}
             </p>
           </div>
-          <EditGallery
-            galleryId={g.id}
-            title={g.title}
-            clientName={g.client_name}
-            photoCount={photos.length}
-            expiresOn={toDateInput(g.expires_at)}
-            password={g.password_hash && !isHashedPassword(g.password_hash) ? g.password_hash : ""}
-            hasLegacyPassword={isHashedPassword(g.password_hash)}
-            zipName={g.zip_key?.split("/").pop() ?? null}
-            zipBytes={g.zip_bytes}
-          />
         </div>
 
         {expired && (

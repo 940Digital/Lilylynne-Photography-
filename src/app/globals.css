@@ -21,6 +21,7 @@ body { background: var(--color-paper); color: var(--color-ink); font-family: var
 }
 .btn:hover { background: #F3EDE4; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-sm { padding: 0.3rem 0.85rem; font-size: 0.8rem; }
 .btn-primary { background: var(--accent); border-color: var(--accent); color: white; }
 .btn-primary:hover { background: var(--accent); opacity: 0.9; }
 .btn-danger { color: #a3281f; border-color: #e8c4c0; }
