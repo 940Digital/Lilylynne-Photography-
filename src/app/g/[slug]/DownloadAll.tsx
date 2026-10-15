@@ -54,7 +54,7 @@ function splitParts(files: Entry[], cap: number): Part[] {
  * Chrome and Edge on a computer stream one zip straight to disk. Every other browser gets the
  * gallery in parts that each fit comfortably in memory.
  */
-export function DownloadAll({ slug, title, manualZip }: { slug: string; title: string; manualZip: boolean }) {
+export function DownloadAll({ slug, title }: { slug: string; title: string }) {
   const [busy, setBusy] = useState(false);
   const [pct, setPct] = useState(0);
   const [label, setLabel] = useState("");
@@ -76,11 +76,6 @@ export function DownloadAll({ slug, title, manualZip }: { slug: string; title: s
     window.addEventListener("beforeunload", h);
     return () => window.removeEventListener("beforeunload", h);
   }, [busy]);
-
-  // A zip the photographer uploaded by hand wins over the automatic one.
-  if (manualZip) {
-    return <a className="btn btn-primary" href={`/api/g/${slug}/zip`}>Download all</a>;
-  }
 
   async function loadListing(): Promise<Listing> {
     const res = await fetch(`/api/g/${slug}/files`);

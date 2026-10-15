@@ -69,5 +69,5 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
     })),
   );
 
-  return <Viewer slug={g.slug} title={g.title} clientName={g.client_name} photos={photos} hasZip={!!g.zip_key} expiresAt={g.expires_at} />;
+  return <Viewer slug={g.slug} title={g.title} clientName={g.client_name} photos={photos} expiresAt={g.expires_at} />;
 }

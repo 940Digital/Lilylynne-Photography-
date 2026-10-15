@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { DeleteGalleryButton, SettingsForm, ZipManager } from "@/components/GalleryTools";
+import { DeleteGalleryButton, SettingsForm } from "@/components/GalleryTools";
 
 interface Props {
   galleryId: string;
@@ -11,11 +11,9 @@ interface Props {
   expiresOn: string;
   password: string;
   hasLegacyPassword: boolean;
-  zipName: string | null;
-  zipBytes: number;
 }
 
-// One Edit button holds every low-frequency control: expiry, password, zip, delete.
+// One Edit button holds every low-frequency control: name, expiry, password, delete.
 export function EditGallery(p: Props) {
   const dlg = useRef<HTMLDialogElement>(null);
   return (
@@ -40,10 +38,6 @@ export function EditGallery(p: Props) {
             hasLegacyPassword={p.hasLegacyPassword}
             onSaved={() => dlg.current?.close()}
           />
-          <div className="border-t border-line pt-5">
-            <p className="label">Download-all zip</p>
-            <ZipManager galleryId={p.galleryId} zipName={p.zipName} zipBytes={p.zipBytes} />
-          </div>
           <div className="flex items-center justify-between gap-4 border-t border-line pt-5">
             <p className="text-sm text-muted">Deleting removes every photo and the client link.</p>
             <DeleteGalleryButton galleryId={p.galleryId} title={p.title} photoCount={p.photoCount} />

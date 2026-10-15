@@ -22,14 +22,12 @@ export function Viewer({
   title,
   clientName,
   photos,
-  hasZip,
   expiresAt,
 }: {
   slug: string;
   title: string;
   clientName: string;
   photos: ViewerPhoto[];
-  hasZip: boolean;
   expiresAt: number;
 }) {
   const router = useRouter();
@@ -74,7 +72,7 @@ export function Viewer({
           {photos.length > 0 && (
             <button className="btn" onClick={() => start(0, true)}>Slideshow</button>
           )}
-          {photos.length > 0 && <DownloadAll slug={slug} title={title} manualZip={hasZip} />}
+          {photos.length > 0 && <DownloadAll slug={slug} title={title} />}
         </div>
       </header>
 

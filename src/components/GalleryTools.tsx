@@ -1,9 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
-import { api, putBlob, withRetry } from "@/lib/browser-upload";
-import { formatBytes } from "@/lib/format";
+import { useState } from "react";
+import { api } from "@/lib/browser-upload";
 
 export function SettingsForm({
   galleryId,
@@ -95,68 +94,6 @@ export function SettingsForm({
         {msg && <span className="text-sm text-muted" role="status">{msg}</span>}
       </div>
     </form>
-  );
-}
-
-export function ZipManager({ galleryId, zipName, zipBytes }: { galleryId: string; zipName: string | null; zipBytes: number }) {
-  const router = useRouter();
-  const input = useRef<HTMLInputElement>(null);
-  const [pct, setPct] = useState<number | null>(null);
-  const [err, setErr] = useState("");
-
-  async function upload(file: File) {
-    setErr("");
-    setPct(0);
-    try {
-      const { key, url } = await api<{ key: string; url: string }>(`/api/admin/galleries/${galleryId}/zip`, "POST", {
-        filename: file.name,
-        bytes: file.size,
-      });
-      await withRetry(() => putBlob(url, file, (n) => setPct(Math.round((n / file.size) * 100))), 1);
-      await api(`/api/admin/galleries/${galleryId}/zip`, "PUT", { key });
-      router.refresh();
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : "Zip upload failed.");
-    }
-    setPct(null);
-  }
-
-  async function remove() {
-    if (!window.confirm("Remove the download-all zip?")) return;
-    await api(`/api/admin/galleries/${galleryId}/zip`, "DELETE");
-    router.refresh();
-  }
-
-  return (
-    <div>
-      {zipName ? (
-        <p className="text-sm">
-          <strong>{zipName}</strong> <span className="text-muted">({formatBytes(zipBytes)})</span>{" "}
-          <button className="ml-2 text-muted underline" onClick={remove}>Remove</button>
-        </p>
-      ) : (
-        <p className="text-sm text-muted">No zip yet. The client sees a Download all button once you add one.</p>
-      )}
-      <div className="mt-3 flex items-center gap-3">
-        <button className="btn" disabled={pct !== null} onClick={() => input.current?.click()}>
-          {zipName ? "Replace zip" : "Upload zip"}
-        </button>
-        {pct !== null && <span className="text-sm text-muted">{pct}%</span>}
-        <input
-          ref={input}
-          data-testid="zip-input"
-          type="file"
-          accept=".zip,application/zip"
-          className="sr-only"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) upload(f);
-            e.target.value = "";
-          }}
-        />
-      </div>
-      {err && <p role="alert" className="mt-2 text-sm text-red-700">{err}</p>}
-    </div>
   );
 }
 

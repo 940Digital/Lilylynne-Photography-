@@ -60,8 +60,6 @@ export default async function ManageGallery({ params }: { params: Promise<{ id: 
                 expiresOn={toDateInput(g.expires_at)}
                 password={g.password_hash && !isHashedPassword(g.password_hash) ? g.password_hash : ""}
                 hasLegacyPassword={isHashedPassword(g.password_hash)}
-                zipName={g.zip_key?.split("/").pop() ?? null}
-                zipBytes={g.zip_bytes}
               />
             </div>
             <p className="text-muted">
