@@ -10,8 +10,6 @@ export const SCHEMA_STATEMENTS = [
   created_at       BIGINT NOT NULL,
   expires_at       BIGINT NOT NULL,
   status           TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'expired')),
-  zip_key          TEXT,
-  zip_bytes        BIGINT NOT NULL DEFAULT 0,
   total_bytes      BIGINT NOT NULL DEFAULT 0,
   expiry_warned_at BIGINT,
   purged_at        BIGINT

@@ -84,8 +84,6 @@ export interface Gallery {
   created_at: number;
   expires_at: number;
   status: "active" | "expired";
-  zip_key: string | null;
-  zip_bytes: number;
   total_bytes: number;
   expiry_warned_at: number | null;
   purged_at: number | null;

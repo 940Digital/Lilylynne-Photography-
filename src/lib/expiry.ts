@@ -33,7 +33,7 @@ export async function runDailyMaintenance(log: (msg: string) => void = console.l
   for (const g of due) {
     const n = await deletePrefix(galleryPrefix(g.id));
     await exec("DELETE FROM photos WHERE gallery_id = $1", [g.id]);
-    await exec("UPDATE galleries SET zip_key = NULL, zip_bytes = 0, total_bytes = 0, purged_at = $1 WHERE id = $2", [now, g.id]);
+    await exec("UPDATE galleries SET total_bytes = 0, purged_at = $1 WHERE id = $2", [now, g.id]);
     log(`expiry: purged "${g.title}" (${n} objects)`);
   }
 
@@ -49,7 +49,7 @@ export async function runDailyMaintenance(log: (msg: string) => void = console.l
   if (stale.length) {
     await exec(
       `UPDATE galleries SET total_bytes =
-         (SELECT COALESCE(SUM(size_bytes), 0) FROM photos WHERE gallery_id = galleries.id) + zip_bytes
+         (SELECT COALESCE(SUM(size_bytes), 0) FROM photos WHERE gallery_id = galleries.id)
        WHERE purged_at IS NULL`,
     );
     log(`expiry: removed ${stale.length} abandoned upload(s)`);

@@ -98,7 +98,7 @@ gallery route sends `noindex`, and `robots.txt` disallows `/admin`, `/g/`, `/api
 
 | Piece | What it is |
 |---|---|
-| `/admin` | Piper's login, dashboard, gallery creation, drag and drop upload, zip, delete |
+| `/admin` | Piper's login, dashboard, gallery creation, drag and drop upload, delete |
 | `/g/[slug]` | Client view: optional password, grid, lightbox, slideshow, original download, "Download all" zip |
 | `/api/cron/daily` | Vercel cron (daily): marks expired galleries, logs a reminder, deletes files after a 3 day grace period |
 | Neon Postgres | Gallery and photo records (tables are created automatically on first use, see `src/lib/schema.ts`) |
