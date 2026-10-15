@@ -26,7 +26,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }
       const dot = p.filename.lastIndexOf(".");
       const name = n === 1 ? p.filename : `${p.filename.slice(0, dot > 0 ? dot : undefined)}-${n}${dot > 0 ? p.filename.slice(dot) : ""}`;
       // Six hours covers a slow connection pulling a multi-GB gallery.
-      return { name, bytes: p.size_bytes, url: await presignGet(p.original_key, { expiresSec: 6 * 3600 }) };
+      return { id: p.id, name, bytes: p.size_bytes, proxy: `/api/g/${slug}/original/${p.id}`, url: await presignGet(p.original_key, { expiresSec: 6 * 3600 }) };
     }),
   );
   return json({ files, totalBytes: files.reduce((s, f) => s + f.bytes, 0) });
