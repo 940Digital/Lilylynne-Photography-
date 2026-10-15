@@ -185,11 +185,8 @@ export function Uploader({ galleryId, startOrder }: { galleryId: string; startOr
           </div>
         </div>
       )}
-      <label
-        className="card flex cursor-pointer flex-col items-center justify-center gap-1 border-dashed px-4 py-8 text-center"
-      >
-        <span className="display text-xl">Add photos</span>
-        <span className="text-xs text-muted">Drop or click. JPEG, PNG, WebP. Originals kept untouched.</span>
+      <label className="btn btn-primary w-full cursor-pointer focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--accent)]">
+        Add photos
         <input
           data-testid="file-input"
           type="file"

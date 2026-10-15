@@ -68,7 +68,7 @@ export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: 
       </div>
 
       {!photos.length ? (
-        <p className="card p-8 text-center text-muted">No photos yet. Drop some in the box on the right.</p>
+        <p className="card p-8 text-center text-muted">No photos yet. Drop them anywhere on this page, or use Add photos.</p>
       ) : (
         <ul className="grid grid-cols-3 gap-2 sm:grid-cols-4 xl:grid-cols-5">
           {photos.map((p) => {
