@@ -77,10 +77,8 @@ export function Viewer({
 
       {cover ? (
         <section className="mx-auto mt-4 max-w-[1600px] px-2 sm:px-8">
-          {/* The whole cover photo, never cropped: it sits on a soft blurred copy of itself. */}
-          <div className="relative grid place-items-center overflow-hidden rounded-sm bg-line">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cover.preview} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
+          {/* The whole cover photo, never cropped. */}
+          <div className="grid place-items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={cover.preview}

@@ -55,7 +55,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
   }
 
   if (!(await hasGalleryAccess(g))) {
-    return <Gate slug={g.slug} title={g.title} hasCover={!!(await coverPhotoFor(g))} />;
+    return <Gate slug={g.slug} title={g.title} />;
   }
 
   const rows = await listReadyPhotos(g.id);

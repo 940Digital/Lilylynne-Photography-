@@ -18,12 +18,10 @@ export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }
 
   const src = await fetch(await presignGet(photo.preview_key, { expiresSec: 300 }));
   if (!src.ok) return new Response("Not found", { status: 404 });
-  // Whole photo, never cropped: fitted inside 1200x630 over a blurred, darkened copy of itself.
-  const input = await sharp(Buffer.from(await src.arrayBuffer())).rotate().toBuffer();
-  const backdrop = await sharp(input).resize(1200, 630, { fit: "cover" }).blur(30).modulate({ brightness: 0.85 }).toBuffer();
-  const photoFit = await sharp(input).resize(1200, 630, { fit: "inside" }).toBuffer();
-  const jpeg = await sharp(backdrop)
-    .composite([{ input: photoFit, gravity: "centre" }])
+  // Whole photo, never cropped: fitted inside 1200x630 on the site's plain paper color.
+  const jpeg = await sharp(Buffer.from(await src.arrayBuffer()))
+    .rotate()
+    .resize(1200, 630, { fit: "contain", background: "#FBF8F4" })
     .jpeg({ quality: 82, mozjpeg: true })
     .toBuffer();
 

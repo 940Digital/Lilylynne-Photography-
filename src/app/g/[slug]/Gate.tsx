@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Brand } from "@/components/Brand";
 import { errorMessage } from "@/lib/browser-upload";
 
-export function Gate({ slug, title, hasCover }: { slug: string; title: string; hasCover: boolean }) {
+export function Gate({ slug, title }: { slug: string; title: string }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -32,10 +32,6 @@ export function Gate({ slug, title, hasCover }: { slug: string; title: string; h
     <main className="grid min-h-dvh place-items-center px-4">
       <div className="w-full max-w-sm text-center">
         <Brand />
-        {hasCover && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={`/g/${slug}/cover`} alt="" width={1200} height={630} className="mx-auto mt-8 aspect-[1200/630] w-full rounded-sm object-contain" />
-        )}
         <h1 className="display mt-8 text-3xl sm:text-4xl">{title}</h1>
         <p className="mt-2 text-muted">This gallery is private. Enter the password you were given.</p>
         <form onSubmit={submit} className="mt-6 space-y-3 text-left">
