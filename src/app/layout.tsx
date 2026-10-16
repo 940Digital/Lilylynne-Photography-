@@ -3,6 +3,8 @@ import { studio } from "@studio";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  // Absolute base for link-preview images (og:image must be a full URL).
+  metadataBase: new URL(process.env.APP_URL || `https://${studio.publicDomain}`),
   title: { default: studio.name, template: `%s | ${studio.name}` },
   // Galleries are private. Nothing on this site should ever show up in search.
   robots: { index: false, follow: false, nocache: true },

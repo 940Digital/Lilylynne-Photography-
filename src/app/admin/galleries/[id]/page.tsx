@@ -77,7 +77,7 @@ export default async function ManageGallery({ params }: { params: Promise<{ id: 
         )}
 
         <div className="grid items-start gap-8 lg:grid-cols-[1fr_17rem]">
-          <AdminPhotos galleryId={g.id} photos={adminPhotos} />
+          <AdminPhotos galleryId={g.id} photos={adminPhotos} coverId={(photos.find((p) => p.id === g.cover_photo_id) ?? photos[0])?.id ?? ""} />
 
           <aside className="space-y-5 order-first lg:sticky lg:top-6 lg:order-last">
             <div className="card space-y-3 p-4">

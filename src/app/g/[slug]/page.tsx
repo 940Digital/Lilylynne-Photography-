@@ -3,21 +3,37 @@ import { notFound } from "next/navigation";
 import { studio } from "@studio";
 import { Brand } from "@/components/Brand";
 import { hasGalleryAccess } from "@/lib/auth";
-import { getGalleryBySlug, isExpired, listReadyPhotos } from "@/lib/db";
+import { coverPhotoFor, getGalleryBySlug, isExpired, listReadyPhotos } from "@/lib/db";
 import { presignGet } from "@/lib/storage";
 import { consumeUsage } from "@/lib/usage";
 import { Gate } from "./Gate";
 import { Viewer, type ViewerPhoto } from "./Viewer";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Your gallery",
-  robots: { index: false, follow: false, nocache: true, noarchive: true },
-};
+const slugOk = (slug: string) => /^[A-Za-z0-9_-]{8,64}$/.test(slug);
+
+// What shows when the link is sent: the gallery's title, the client's name and the cover photo.
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const robots = { index: false, follow: false, nocache: true, noarchive: true };
+  const { slug } = await params;
+  const g = slugOk(slug) ? await getGalleryBySlug(slug) : null;
+  if (!g || isExpired(g)) return { title: "Your gallery", robots };
+  const cover = await coverPhotoFor(g);
+  const description = `${g.client_name}'s photos by ${studio.name}`;
+  const url = `/g/${g.slug}`;
+  const images = cover ? [{ url: `${url}/cover?v=${cover.id}`, width: 1200, height: 630, alt: g.title }] : undefined;
+  return {
+    title: g.title,
+    description,
+    robots,
+    openGraph: { type: "website", siteName: studio.name, title: g.title, description, url, images },
+    twitter: { card: images ? "summary_large_image" : "summary", title: g.title, description, images: images?.map((i) => i.url) },
+  };
+}
 
 export default async function GalleryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  if (!/^[A-Za-z0-9_-]{8,64}$/.test(slug)) notFound();
+  if (!slugOk(slug)) notFound();
 
   const g = await getGalleryBySlug(slug);
   if (!g) notFound();
@@ -39,7 +55,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
   }
 
   if (!(await hasGalleryAccess(g))) {
-    return <Gate slug={g.slug} />;
+    return <Gate slug={g.slug} title={g.title} hasCover={!!(await coverPhotoFor(g))} />;
   }
 
   const rows = await listReadyPhotos(g.id);
@@ -58,6 +74,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
       </main>
     );
   }
+  const coverId = (rows.find((p) => p.id === g.cover_photo_id) ?? rows[0])?.id;
   const photos: ViewerPhoto[] = await Promise.all(
     rows.map(async (p) => ({
       id: p.id,
@@ -69,5 +86,5 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
     })),
   );
 
-  return <Viewer slug={g.slug} title={g.title} clientName={g.client_name} photos={photos} expiresAt={g.expires_at} />;
+  return <Viewer slug={g.slug} title={g.title} coverId={coverId} clientName={g.client_name} photos={photos} expiresAt={g.expires_at} />;
 }

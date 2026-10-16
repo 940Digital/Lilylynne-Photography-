@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { exec, getGalleryById, nowSec } from "@/lib/db";
+import { exec, getGalleryById, nowSec, queryOne } from "@/lib/db";
 import { endOfDay } from "@/lib/format";
 import { fail, guardAdmin, idParam, json, parseBody } from "@/lib/http";
 import { deletePrefix, galleryPrefix } from "@/lib/storage";
@@ -12,6 +12,8 @@ const patchSchema = z.object({
   expiresOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   // Empty string removes the password.
   password: z.string().max(100).optional(),
+  // Photo id to use as the cover. Empty string goes back to the first photo.
+  coverPhotoId: z.string().max(64).optional(),
 });
 
 export async function PATCH(req: Request, ctx: Ctx) {
@@ -37,6 +39,13 @@ export async function PATCH(req: Request, ctx: Ctx) {
     if (data.password && data.password.length < 4) return fail(400, "password: use at least 4 characters.");
     const hash = data.password || null; // plain text on purpose, see crypto.ts
     await exec("UPDATE galleries SET password_hash = $1 WHERE id = $2", [hash, g.id]);
+  }
+  if (data.coverPhotoId !== undefined) {
+    if (data.coverPhotoId) {
+      const own = await queryOne("SELECT id FROM photos WHERE id = $1 AND gallery_id = $2 AND status = 'ready'", [data.coverPhotoId, g.id]);
+      if (!own) return fail(400, "coverPhotoId: that photo is not in this gallery.");
+    }
+    await exec("UPDATE galleries SET cover_photo_id = $1 WHERE id = $2", [data.coverPhotoId || null, g.id]);
   }
   return json({ ok: true });
 }

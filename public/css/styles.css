@@ -727,6 +727,8 @@ a.media:hover img,
    eyeballing — no mismatched heights, no per-row hand-tuning. */
 .spread--b { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
 .spread--d { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+/* Two portrait tiles centered at the width of two columns of a --b row. */
+.spread--c { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; width: calc((100% - 2 * clamp(0.9rem, 2vw, 1.9rem)) * 2 / 3 + clamp(0.9rem, 2vw, 1.9rem)); margin-inline: auto; }
 
 .work__footer {
   display: flex;
@@ -1211,6 +1213,7 @@ body.lightbox-open { overflow: hidden; }
   .hero__spray { left: auto; right: calc(var(--gutter) * -0.4); bottom: 2%; }
 
   .spread--d { grid-template-columns: minmax(0, 1fr); }
+  .spread--c { width: auto; }
   .spread--b { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .spread--b > *:nth-child(3) { grid-column: 1 / -1; max-width: 62%; margin-inline: auto; }
 
@@ -1245,7 +1248,7 @@ body.lightbox-open { overflow: hidden; }
 }
 
 @media (max-width: 560px) {
-  .spread--b { grid-template-columns: minmax(0, 1fr); }
+  .spread--b, .spread--c { grid-template-columns: minmax(0, 1fr); }
   /* Reset every property the ≤900px rule set on the 3rd child, not just
      max-width — margin-inline: auto left in place made it shrink-to-fit an
      aspect-ratio box with no other sizing basis, collapsing it to 0 width

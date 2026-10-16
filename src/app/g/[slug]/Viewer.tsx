@@ -21,12 +21,14 @@ const SLIDE_MS = 4000;
 export function Viewer({
   slug,
   title,
+  coverId,
   clientName,
   photos,
   expiresAt,
 }: {
   slug: string;
   title: string;
+  coverId?: string;
   clientName: string;
   photos: ViewerPhoto[];
   expiresAt: number;
@@ -58,24 +60,50 @@ export function Viewer({
   }
 
   const dl = (id: string) => `/api/g/${slug}/download/${id}`;
+  const cover = photos.find((p) => p.id === coverId) ?? photos[0];
+  const subline = `${clientName} · ${photos.length} photos · available until ${formatDate(expiresAt)}`;
+  const actions = (
+    <>
+      {photos.length > 0 && <button className="btn" onClick={() => start(0, true)}>Slideshow</button>}
+      {photos.length > 0 && <DownloadAll slug={slug} title={title} />}
+    </>
+  );
 
   return (
     <div className="min-h-dvh">
-      <header className="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-4 px-4 pb-6 pt-8 sm:px-8">
-        <div>
-          <Brand />
-          <h1 className="display mt-6 text-4xl sm:text-5xl">{title}</h1>
-          <p className="mt-1 text-muted">
-            {clientName} · {photos.length} photos · available until {formatDate(expiresAt)}
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {photos.length > 0 && (
-            <button className="btn" onClick={() => start(0, true)}>Slideshow</button>
-          )}
-          {photos.length > 0 && <DownloadAll slug={slug} title={title} />}
-        </div>
-      </header>
+      <div className="mx-auto max-w-[1600px] px-4 pt-6 sm:px-8">
+        <Brand />
+      </div>
+
+      {cover ? (
+        <section className="relative mx-auto mt-4 max-w-[1600px] px-2 sm:px-8">
+          <div className="relative grid min-h-[68svh] place-items-end overflow-hidden rounded-sm bg-line sm:min-h-[74svh]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={cover.preview}
+              alt=""
+              fetchPriority="high"
+              onError={onImgError}
+              className="absolute inset-0 h-full w-full object-cover"
+              style={{ objectPosition: "50% 30%" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
+            <div className="relative w-full px-5 pb-8 text-center text-white sm:px-10 sm:pb-12">
+              <h1 className="display mx-auto max-w-4xl text-balance text-4xl leading-tight sm:text-6xl">{title}</h1>
+              <p className="mt-3 text-sm tracking-[0.18em] text-white/85 uppercase sm:text-base">{subline}</p>
+              <div className="mt-6 flex flex-wrap justify-center gap-2 text-ink">{actions}</div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <header className="mx-auto flex max-w-[1600px] flex-wrap items-end justify-between gap-4 px-4 pb-6 pt-8 sm:px-8">
+          <div>
+            <h1 className="display text-4xl sm:text-5xl">{title}</h1>
+            <p className="mt-1 text-muted">{subline}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">{actions}</div>
+        </header>
+      )}
 
       {photos.length === 0 ? (
         <p className="px-4 py-24 text-center text-muted sm:px-8">Photos are on their way. Check back soon.</p>

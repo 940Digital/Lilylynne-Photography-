@@ -13,7 +13,7 @@ export interface AdminPhoto {
   height: number;
 }
 
-export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: AdminPhoto[] }) {
+export function AdminPhotos({ galleryId, photos, coverId }: { galleryId: string; photos: AdminPhoto[]; coverId: string }) {
   const router = useRouter();
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
@@ -31,6 +31,21 @@ export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: 
   function stop() {
     setSelecting(false);
     setPicked(new Set());
+  }
+
+  async function makeCover() {
+    const [id] = picked;
+    if (picked.size !== 1 || !id) return;
+    setBusy(true);
+    try {
+      await api(`/api/admin/galleries/${galleryId}`, "PATCH", { coverPhotoId: id });
+      stop();
+    } catch (e) {
+      window.alert(e instanceof Error ? e.message : "Could not set the cover.");
+    } finally {
+      setBusy(false);
+      router.refresh();
+    }
   }
 
   async function removePicked() {
@@ -57,6 +72,7 @@ export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: 
               <button className="btn btn-sm btn-danger" disabled={!picked.size || busy} onClick={removePicked}>
                 {busy ? "Deleting..." : `Delete ${picked.size || ""}`.trim()}
               </button>
+              <button className="btn btn-sm" disabled={picked.size !== 1 || busy} onClick={makeCover}>Set as cover</button>
               <button className="btn btn-sm" onClick={stop}>Done</button>
             </>
           ) : (
@@ -83,6 +99,9 @@ export function AdminPhotos({ galleryId, photos }: { galleryId: string; photos: 
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.thumbUrl} alt={p.filename} width={p.width} height={p.height} loading="lazy" className={`aspect-square w-full object-cover transition ${on ? "opacity-70" : ""}`} />
+                  {p.id === coverId && (
+                    <span className="absolute bottom-1.5 left-1.5 rounded-full bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white">Cover</span>
+                  )}
                   {selecting && (
                     <span className={`absolute left-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full border text-xs ${on ? "border-accent bg-accent text-white" : "border-white bg-black/20 text-transparent"}`}>
                       ✓

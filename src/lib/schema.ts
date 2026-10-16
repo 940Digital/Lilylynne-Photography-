@@ -12,7 +12,8 @@ export const SCHEMA_STATEMENTS = [
   status           TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'expired')),
   total_bytes      BIGINT NOT NULL DEFAULT 0,
   expiry_warned_at BIGINT,
-  purged_at        BIGINT
+  purged_at        BIGINT,
+  cover_photo_id   TEXT
 )`,
   `CREATE INDEX IF NOT EXISTS idx_galleries_status_expires ON galleries (status, expires_at)`,
   `CREATE TABLE IF NOT EXISTS photos (
@@ -41,4 +42,9 @@ export const SCHEMA_STATEMENTS = [
   count BIGINT NOT NULL DEFAULT 0,
   PRIMARY KEY (month, kind)
 )`,
+];
+
+// Columns added after the first release. Run (once, lazily) when a query hits an older table.
+export const MIGRATION_STATEMENTS = [
+  `ALTER TABLE galleries ADD COLUMN IF NOT EXISTS cover_photo_id TEXT`,
 ];

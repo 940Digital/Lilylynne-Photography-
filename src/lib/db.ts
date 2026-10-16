@@ -1,7 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { neon } from "@neondatabase/serverless";
-import { SCHEMA_STATEMENTS } from "./schema";
+import { MIGRATION_STATEMENTS, SCHEMA_STATEMENTS } from "./schema";
 
 type Params = unknown[];
 interface Result<T> { rows: T[]; rowCount: number }
@@ -53,7 +53,13 @@ async function run<T>(text: string, params: Params): Promise<Result<T>> {
     return await d<T>(text, params);
   } catch (e) {
     // 42P01 = table does not exist: first run on an empty database. Create the schema, then retry once.
-    if ((e as { code?: string })?.code !== "42P01") throw e;
+    const code = (e as { code?: string })?.code;
+    if (code === "42703") {
+      // 42703 = column does not exist: the database predates a later column. Add it, then retry once.
+      for (const stmt of MIGRATION_STATEMENTS) await d(stmt, []);
+      return d<T>(text, params);
+    }
+    if (code !== "42P01") throw e;
     for (const stmt of SCHEMA_STATEMENTS) await d(stmt, []);
     return d<T>(text, params);
   }
@@ -87,6 +93,7 @@ export interface Gallery {
   total_bytes: number;
   expiry_warned_at: number | null;
   purged_at: number | null;
+  cover_photo_id: string | null;
 }
 
 export interface Photo {
@@ -114,6 +121,15 @@ export const getGalleryBySlug = (slug: string) => queryOne<Gallery>("SELECT * FR
 
 export const listReadyPhotos = (galleryId: string) =>
   query<Photo>("SELECT * FROM photos WHERE gallery_id = $1 AND status = 'ready' ORDER BY sort_order, filename", [galleryId]);
+
+/** The gallery's chosen cover, or its first photo when none is chosen (or the chosen one was deleted). */
+export async function coverPhotoFor(g: Pick<Gallery, "id" | "cover_photo_id">): Promise<Photo | null> {
+  if (g.cover_photo_id) {
+    const chosen = await queryOne<Photo>("SELECT * FROM photos WHERE id = $1 AND gallery_id = $2 AND status = 'ready'", [g.cover_photo_id, g.id]);
+    if (chosen) return chosen;
+  }
+  return queryOne<Photo>("SELECT * FROM photos WHERE gallery_id = $1 AND status = 'ready' ORDER BY sort_order, filename LIMIT 1", [g.id]);
+}
 
 export async function countActiveGalleries(): Promise<number> {
   const row = await queryOne<{ n: number }>(
