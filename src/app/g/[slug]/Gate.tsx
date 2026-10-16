@@ -34,7 +34,7 @@ export function Gate({ slug, title, hasCover }: { slug: string; title: string; h
         <Brand />
         {hasCover && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={`/g/${slug}/cover`} alt="" width={1200} height={630} className="mx-auto mt-8 aspect-[1200/630] w-full rounded-sm object-cover" />
+          <img src={`/g/${slug}/cover`} alt="" width={1200} height={630} className="mx-auto mt-8 aspect-[1200/630] w-full rounded-sm object-contain" />
         )}
         <h1 className="display mt-8 text-3xl sm:text-4xl">{title}</h1>
         <p className="mt-2 text-muted">This gallery is private. Enter the password you were given.</p>

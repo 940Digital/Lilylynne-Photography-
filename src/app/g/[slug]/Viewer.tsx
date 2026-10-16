@@ -76,23 +76,26 @@ export function Viewer({
       </div>
 
       {cover ? (
-        <section className="relative mx-auto mt-4 max-w-[1600px] px-2 sm:px-8">
-          <div className="relative grid min-h-[68svh] place-items-end overflow-hidden rounded-sm bg-line sm:min-h-[74svh]">
+        <section className="mx-auto mt-4 max-w-[1600px] px-2 sm:px-8">
+          {/* The whole cover photo, never cropped: it sits on a soft blurred copy of itself. */}
+          <div className="relative grid place-items-center overflow-hidden rounded-sm bg-line">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={cover.preview} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-2xl" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={cover.preview}
-              alt=""
+              alt={title}
+              width={cover.width}
+              height={cover.height}
               fetchPriority="high"
               onError={onImgError}
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: "50% 30%" }}
+              className="relative max-h-[82svh] w-auto max-w-full object-contain"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
-            <div className="relative w-full px-5 pb-8 text-center text-white sm:px-10 sm:pb-12">
-              <h1 className="display mx-auto max-w-4xl text-balance text-4xl leading-tight sm:text-6xl">{title}</h1>
-              <p className="mt-3 text-sm tracking-[0.18em] text-white/85 uppercase sm:text-base">{subline}</p>
-              <div className="mt-6 flex flex-wrap justify-center gap-2 text-ink">{actions}</div>
-            </div>
+          </div>
+          <div className="px-2 pb-2 pt-8 text-center sm:pt-10">
+            <h1 className="display mx-auto max-w-4xl text-balance text-4xl leading-tight sm:text-6xl">{title}</h1>
+            <p className="mt-3 text-sm tracking-[0.18em] text-muted uppercase sm:text-base">{subline}</p>
+            <div className="mt-6 flex flex-wrap justify-center gap-2">{actions}</div>
           </div>
         </section>
       ) : (
